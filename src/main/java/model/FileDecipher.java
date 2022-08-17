@@ -1,6 +1,9 @@
 package model;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 
 public class FileDecipher implements Runnable{
@@ -14,13 +17,26 @@ public class FileDecipher implements Runnable{
     private int id;
     private String[] pathsOfFilesToDecipher;
     private ArrayList<Byte> decipherByteList;
+    private  static byte[] decipherKey;
+    private static FileJoiner fileJoiner;
 
-    public FileDecipher(String[] pathsOfFilesToDecipher) {
+    public FileDecipher(String[] pathsOfFilesToDecipher,String keyFileString, FileJoiner fileJoiner) {
+
+        if(numberOfThreads == 0){
+            FileDecipher.fileJoiner = fileJoiner;
+            try {
+                decipherKey = Files.readAllBytes(Path.of(keyFileString));
+            } catch (IOException e) {
+                e.printStackTrace();
+                System.out.println("Was not able to convert key file to byte array");
+            }
+        }
 
         id = numberOfThreads;
         numberOfThreads++;
         this.pathsOfFilesToDecipher = pathsOfFilesToDecipher;
         decipherByteList = new ArrayList<>();
+
 
         System.out.println("FileDecipher with id number " + id + " was constructed"); ///////////////////////////////DELETE WHEN FINISHED
 
@@ -32,23 +48,32 @@ public class FileDecipher implements Runnable{
 
     }
 
-    public byte[] getDecipherByteArray() {
+    public byte[] getDecipherByteArray(int fileListPosition) {
 
-        byte[] decipherByteArray = new byte[decipherByteList.size()];
-        for (int i = 0; i < decipherByteArray.length; i++) {
-            decipherByteArray[i] = decipherByteList.get(i);
+        byte[] currentByteArrayToDecipher = null;
+
+        try {
+            currentByteArrayToDecipher = Files.readAllBytes(Path.of(pathsOfFilesToDecipher[fileListPosition]));
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("Was not able to convert key file to byte array");
         }
-
-        return decipherByteArray;
+        return currentByteArrayToDecipher;
     }
 
-    //Method to extract key from files
+    public byte[] unXORArray(byte[] byteArrayToUnXOR){
+        byte[] unXoredArray = new byte[byteArrayToUnXOR.length];
 
-    //Method to get bytearray from files
+        for (int i = 0; i < byteArrayToUnXOR.length; i++) {
+            unXoredArray[i] = (byte) (byteArrayToUnXOR[i] ^ decipherKey[i%256]);
+        }
+        return unXoredArray;
+    }
 
-    //Method to decypher byte array from files and store them in byteArray in order
+    public void addDecipherByte(Byte byteToAdd){
+        decipherByteList.add(byteToAdd);
+    }
 
-    //Rebuild original file byte array from matrix and store it as deciphered file.
 
 
 
