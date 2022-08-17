@@ -68,6 +68,7 @@ public class MainViewController implements Initializable {
 
         if(selectedFile != null) { // Also check that the directory contains files with the extension .cipher
             System.out.println(selectedFile.toString());
+            controller.decipherFiles(selectedFile);
         } else {
             System.out.println("No file has been selected.");
         }
