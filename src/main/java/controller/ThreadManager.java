@@ -46,7 +46,8 @@ public class ThreadManager {
 
     public boolean manageDecipherThreads(String[] arrayOfFilePaths,String decipherStoreDirectory){
 
-        int numberOfFilesToDecipher = arrayOfFilePaths.length;
+        int numberOfFilesToDecipher = arrayOfFilePaths.length-1;
+        String keyPath = arrayOfFilePaths[numberOfFilesToDecipher];
 
         //3 threads max
         int numberOfThreads = 3;
@@ -59,6 +60,12 @@ public class ThreadManager {
 
         FileDecipher[] fileDecipherArray = new FileDecipher[numberOfThreads];
 
+        //Creation FileJoiner
+        FileJoiner currentFileJoiner = new FileJoiner(numberOfThreads,decipherStoreDirectory);
+        System.out.println("FileJoiner Created"); ////////////////////////////////////// DELETE WHEN FINISHED
+
+
+        //Creation of fileDecipher threads with the particular list of files it is going to decipher, the key and the fileJoiner
         for (int i = 0; i < numberOfThreads; i++) {
 
             int startPos = i*numberOfPartsForEachThreadToDecipher;
@@ -74,12 +81,15 @@ public class ThreadManager {
                 subArrayForThisThread[j] = arrayOfFilePaths[startPos+j];
             }
 
-            fileDecipherArray[i] = new FileDecipher(subArrayForThisThread);
+            fileDecipherArray[i] = new FileDecipher(subArrayForThisThread,keyPath,currentFileJoiner);
+            System.out.println("FileDecipher " +i+ "Created"); ////////////////////////////////////// DELETE WHEN FINISHED
         }
 
+        //Start of fileDecipher threads
         for (int i = 0; i < numberOfThreads; i++) {
             Thread thread = new Thread(fileDecipherArray[i]);
             thread.start();
+            System.out.println("FileDecipher " +i+ "Started"); ////////////////////////////////////// DELETE WHEN FINISHED
         }
 
         return true;

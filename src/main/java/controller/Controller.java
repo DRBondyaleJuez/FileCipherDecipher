@@ -16,7 +16,6 @@ public class Controller {
     public Controller() {
         createOrUseFileDirectories();
         threadManager= new ThreadManager();
-        directoryToStoreDecipherFile = null;
     }
 
     //Cipher SECTION
@@ -129,25 +128,35 @@ public class Controller {
         return numberOfParts;
     }
 
-    //Create a setter for file to be cipher and extract filename with a method
 
-    //Method for Once filename is known create the directories for the dividers and the ciphers
-
-
-    // Filesize analyzed and shared adequately processed to let FileDivider call threads to treat it. Give them the file in byte format
-
-
-
-
-    //Give the filenames, their directory and directory of the divided files to the Filecipher
-
-
-
-    //DEcipher Section
+    //DECIPHER SECTION
 
     public void decipherFiles(File filesToDecipher){
 
-        int numberOfFilesToDecipher = filesToDecipher.list().length;
+        String[] files = filesToDecipher.list();
+        int numberOfFilesToDecipher = files.length;
+
+        if(numberOfFilesToDecipher == 0) {
+            System.out.println("There were no files in this directory: " + filesToDecipher);
+            return;
+        }
+        System.out.println(numberOfFilesToDecipher);
+        for (String file : files) {
+            System.out.println(file);
+        }
+
+        //Extracting and writing name of deciphered file
+        String rawName = filesToDecipher.getName();
+        String[] nameAndFormat = rawName.split("_");
+        String format = nameAndFormat[nameAndFormat.length-1];
+        String name = rawName.replace("_"+format," (DECIPHER)."+format);
+        System.out.println(name);
+
+        String decipherFileStoreDirectory = directoryToStoreDecipherFile.getAbsolutePath()+"\\name";
+
+        //threadManager.manageDecipherThreads(files,decipherFileStoreDirectory);
+
+
 
 
 
