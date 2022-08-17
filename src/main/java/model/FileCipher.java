@@ -143,14 +143,4 @@ public class FileCipher implements Runnable{
     }
 
 
-
-    //Method to create key
-
-
-    //Method to get bytes in divided file and encrypt it with key using XOR
-
-    //Method to save a file in a format .cipher when given a byte array
-
-
-
 }
