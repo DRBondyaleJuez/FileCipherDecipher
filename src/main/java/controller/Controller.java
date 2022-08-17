@@ -1,5 +1,7 @@
 package controller;
 
+import model.FileDeposit;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -65,11 +67,14 @@ public class Controller {
         } catch (IOException e) {
             e.printStackTrace();
             System.out.println("Was not able to convert file to byte array");
-            //TODO: A GRACEFUL SHUT DOWN
+            gracefulShutdown("File could not be converted to byteArray");
         }
 
         //Calculating number of parts necessary to divide the file
         int numberOfParts = numberOfPartsBasedOnFileSize(file);
+
+        //Creating File Deposit
+        FileDeposit currentFileDeposit = new FileDeposit(numberOfParts,null);
 
         //Creating the folder to store divisions
         String projectPath = directoryToStoreDividedFile.toString()+"\\" + fileName + "_" + fileFormat;
@@ -81,7 +86,7 @@ public class Controller {
         directoryToStoreDividedFile = dividedFilesDir;
 
         //Managing thread for file division
-        threadManager.manageDividerThreads(fileByteArray,numberOfParts,fileName+"_"+fileFormat,projectPath);
+        threadManager.manageDividerThreads(fileByteArray,currentFileDeposit,fileName+"_"+fileFormat,projectPath);
 
         //CIPHER
 
@@ -95,10 +100,8 @@ public class Controller {
 
         //Managing thread for file cipher
         System.out.println("threadManager calls fileCiphers");////////////////////////////////////////////////////////////////////////////DELETE WHEN FINISHED
-        threadManager.manageCipherThreads(directoryToStoreDividedFile.toString(),directoryToStoreCipherFile.toString(),numberOfParts);
+        threadManager.manageCipherThreads(directoryToStoreCipherFile.toString(),currentFileDeposit);
         //Reassure file transfer while threads are working
-        System.out.println("threadManager called to keep adding files");////////////////////////////////////////////////////////////////////////////DELETE WHEN FINISHED
-        threadManager.continueAddingFilesThroughObserver(numberOfParts);
     }
 
 
@@ -148,6 +151,11 @@ public class Controller {
 
 
 
+    }
+
+    public void gracefulShutdown(String errorMessage){
+        System.out.println("Graceful shutdown due to Error involved: " + errorMessage);
+        System.exit(-1);
     }
 
 

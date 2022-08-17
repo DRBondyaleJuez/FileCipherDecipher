@@ -1,9 +1,6 @@
 package controller;
 
-import model.FileCipher;
-import model.FileDecipher;
-import model.FileDivider;
-import model.ObserverBetweenDividerAndCipher;
+import model.*;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -14,16 +11,15 @@ public class ThreadManager {
     public ThreadManager() {
     }
 
-    public boolean manageDividerThreads(byte[] file,int numberOfParts,String fileName,String saveDirectory){
+    public boolean manageDividerThreads(byte[] file, FileDeposit currentFileDeposit, String fileName, String saveDirectory){
 
         //5 threads max
         int numberOfThreads = 5;
 
-        //THIS COULD BE WRONG I ASSUMED EACH THREAD WILL BE IN CHARGED OF ONE PART OF THE DIVIDED FILE
-        if(numberOfParts < numberOfThreads){numberOfThreads=numberOfParts;}
+        if(currentFileDeposit.viewTotalNumberOfParts() < numberOfThreads){numberOfThreads= currentFileDeposit.viewTotalNumberOfParts();}
 
         for (int i = 0; i < numberOfThreads; i++) {
-            FileDivider fileDivider = new FileDivider(file,fileName,saveDirectory,numberOfParts);
+            FileDivider fileDivider = new FileDivider(file,fileName,saveDirectory,currentFileDeposit);
             Thread thread = new Thread(fileDivider);
             thread.start();
         }
@@ -32,35 +28,21 @@ public class ThreadManager {
 
     }
 
-    public boolean manageCipherThreads(String directoryOfDividedFiles,String cipherStoreDirectory,int numberOfParts){
+    public boolean manageCipherThreads(String cipherStoreDirectory,FileDeposit currentFileDeposit){
 
         //2 threads max
         int numberOfThreads = 2;
 
-        //THIS COULD BE WRONG I ASSUMED EACH THREAD WILL BE IN CHARGED OF ONE PART OF THE DIVIDED FILE
-        if(numberOfParts < numberOfThreads){numberOfThreads=numberOfParts;}
+        if(currentFileDeposit.viewTotalNumberOfParts() < numberOfThreads){numberOfThreads=currentFileDeposit.viewTotalNumberOfParts();}
 
         for (int i = 0; i < numberOfThreads; i++) {
-            FileCipher fileCipher = new FileCipher(directoryOfDividedFiles,cipherStoreDirectory,numberOfParts);
+            FileCipher fileCipher = new FileCipher(cipherStoreDirectory,currentFileDeposit);
             Thread thread = new Thread(fileCipher);
             thread.start();
         }
 
         return true;
     }
-
-    public void continueAddingFilesThroughObserver(int numberOfParts){
-
-        ObserverBetweenDividerAndCipher observer = new ObserverBetweenDividerAndCipher(numberOfParts);
-
-        Thread thread = new Thread(observer);
-
-        System.out.println("Thread manager is going to continue adding files through observer"); /////////////////////////////////////DELETE WHEN FINISHED
-
-        thread.start();
-
-    }
-
 
     public boolean manageDecipherThreads(String[] arrayOfFilePaths,String decipherStoreDirectory){
 
