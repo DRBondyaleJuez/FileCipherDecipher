@@ -37,7 +37,6 @@ public class FileDecipher implements Runnable{
         this.pathsOfFilesToDecipher = pathsOfFilesToDecipher;
         decipherByteList = new ArrayList<>();
 
-
         System.out.println("FileDecipher with id number " + id + " was constructed"); ///////////////////////////////DELETE WHEN FINISHED
 
     }
@@ -46,8 +45,20 @@ public class FileDecipher implements Runnable{
     @Override
     public void run() {
 
+        for (int i = 0; i < pathsOfFilesToDecipher.length; i++) {
+            byte[] byteArrayReadyForDecipher = getDecipherByteArray(i);
+            byte[] byteArrayReadyForFirstJoining = unXORArray(byteArrayReadyForDecipher);
+
+            for (int j = 0; j < byteArrayReadyForFirstJoining.length; j++) {
+                addDecipherByte(byteArrayReadyForFirstJoining[j]);
+            }
+        }
+
+        //After processing all files in the list the ordered bytes are sent to fileJoiner for final joining
+        fileJoiner.add(decipherByteList,id);
     }
 
+    //Convert file that needs deciphering to its byte array form
     public byte[] getDecipherByteArray(int fileListPosition) {
 
         byte[] currentByteArrayToDecipher = null;
@@ -61,6 +72,7 @@ public class FileDecipher implements Runnable{
         return currentByteArrayToDecipher;
     }
 
+    //Undo the xor ciphering of the byte array of the file
     public byte[] unXORArray(byte[] byteArrayToUnXOR){
         byte[] unXoredArray = new byte[byteArrayToUnXOR.length];
 
@@ -70,11 +82,8 @@ public class FileDecipher implements Runnable{
         return unXoredArray;
     }
 
+    //Adding bytes to array in the order needed for final joining
     public void addDecipherByte(Byte byteToAdd){
         decipherByteList.add(byteToAdd);
     }
-
-
-
-
 }

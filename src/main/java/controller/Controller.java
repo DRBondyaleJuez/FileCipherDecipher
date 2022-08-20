@@ -22,7 +22,6 @@ public class Controller {
 
     private void createOrUseFileDirectories(){
 
-
         File dividedFilesDir = new File("WorkingFolder\\defaultFolder\\fileDivisions");
 
         if (! dividedFilesDir.exists()) {
@@ -37,9 +36,10 @@ public class Controller {
         directoryToStoreCipherFile = cipherFilesDir;
 
         File decipherFilesDir = new File("WorkingFolder\\defaultFolder\\fileDecipher");
-        if (! cipherFilesDir.exists()) {
-            cipherFilesDir.mkdirs();
+        if (! decipherFilesDir.exists()) {
+            decipherFilesDir.mkdirs();
         }
+
         directoryToStoreDecipherFile = decipherFilesDir;
 
     }
@@ -53,8 +53,6 @@ public class Controller {
         String[] fileName1 = fileName.split("."+fileFormat);
         fileName = fileName1[0];
 
-        System.out.println(fileName); ///////////////////DELETE WHEN FINISHED
-        System.out.println(fileFormat); ///////////////////DELETE WHEN FINISHED
 
         //DIVISION
 
@@ -82,7 +80,6 @@ public class Controller {
         if (! dividedFilesDir.exists()) {
             dividedFilesDir.mkdirs();
         }
-        directoryToStoreDividedFile = dividedFilesDir;
 
         //Managing thread for file division
         threadManager.manageDividerThreads(fileByteArray,currentFileDeposit,fileName+"_"+fileFormat,projectPath);
@@ -95,11 +92,9 @@ public class Controller {
         if (! cipherFilesDir.exists()) {
             cipherFilesDir.mkdirs();
         }
-        directoryToStoreCipherFile = cipherFilesDir;
 
         //Managing thread for file cipher
-        System.out.println("threadManager calls fileCiphers");////////////////////////////////////////////////////////////////////////////DELETE WHEN FINISHED
-        threadManager.manageCipherThreads(directoryToStoreCipherFile.toString(),currentFileDeposit);
+        threadManager.manageCipherThreads(cipherFilesDir.toString(),currentFileDeposit);
         //Reassure file transfer while threads are working
     }
 
@@ -134,31 +129,46 @@ public class Controller {
     public void decipherFiles(File filesToDecipher){
 
         String[] files = filesToDecipher.list();
-        int numberOfFilesToDecipher = files.length;
+        int numberOfFilesToDecipher = files.length-1;
 
-        if(numberOfFilesToDecipher == 0) {
+        if(numberOfFilesToDecipher <= 0) {
             System.out.println("There were no files in this directory: " + filesToDecipher);
             return;
         }
-        System.out.println(numberOfFilesToDecipher);
-        for (String file : files) {
-            System.out.println(file);
-        }
+
 
         //Extracting and writing name of deciphered file
         String rawName = filesToDecipher.getName();
         String[] nameAndFormat = rawName.split("_");
         String format = nameAndFormat[nameAndFormat.length-1];
         String name = rawName.replace("_"+format," (DECIPHER)."+format);
-        System.out.println(name);
 
-        String decipherFileStoreDirectory = directoryToStoreDecipherFile.getAbsolutePath()+"\\name";
+        String decipherFileStoreDirectory = directoryToStoreDecipherFile.getAbsolutePath() + "\\" + name;
 
-        //threadManager.manageDecipherThreads(files,decipherFileStoreDirectory);
+        //Extracting and separating Key and files
 
+        String[] filesPathsNoKey = new String[numberOfFilesToDecipher];
+        String keyFilePath = "";
 
+        if(files[0].equals("KEY.cipher")){
+            for (int i = 1; i < numberOfFilesToDecipher+1; i++) {
 
+                filesPathsNoKey[i-1] = filesToDecipher.getAbsolutePath() + "\\" + files[i];
+            }
+            keyFilePath = filesToDecipher.getAbsolutePath() + "\\" + files[0];
+        } else if(files[numberOfFilesToDecipher].equals("KEY.cipher")){
+            for (int i = 0; i < numberOfFilesToDecipher; i++) {
 
+                filesPathsNoKey[i] = filesToDecipher.getAbsolutePath() + "\\" + files[i];
+            }
+            keyFilePath = filesToDecipher.getAbsolutePath() + "\\" + files[numberOfFilesToDecipher];
+        } else {
+            System.out.println("Key file is neither the first or the last file so perhaps the naming convention of the file to decipher is particularly complicated.");
+            gracefulShutdown("Unable to identify keyFile");
+
+        }
+
+        threadManager.manageDecipherThreads(filesPathsNoKey,keyFilePath,decipherFileStoreDirectory);
 
     }
 

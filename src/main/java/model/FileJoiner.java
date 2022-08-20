@@ -22,13 +22,9 @@ public class FileJoiner {
     public synchronized void add(ArrayList<Byte> decipherByteArray,int threadId){
         decipherByteArrayClumps[threadId] = decipherByteArray;
         numberOfCompletedArrayClumps++;
-        if(numberOfCompletedArrayClumps == numberOfByteArrayClumps){
-            decipherByteJoiner();
-        }
-        System.out.println("Byte Array added to fileJoiner. A total of "+numberOfCompletedArrayClumps+"have been completed."); ////////////////////////////////////// DELETE WHEN FINISHED
     }
 
-    private void decipherByteJoiner(){
+    public void decipherByteJoiner(){
 
         int lengthOfFinalByteArray = 0;
         for (int i = 0; i < numberOfByteArrayClumps; i++) {
@@ -37,21 +33,19 @@ public class FileJoiner {
 
         byte[] finalJoinedByteArray = new byte[lengthOfFinalByteArray];
 
-        int clumpNumber = 0;
-        for (int i = 0; i < lengthOfFinalByteArray; i++) {
-            if(decipherByteArrayClumps[clumpNumber].isEmpty()){
-                clumpNumber++;
-            }
-            finalJoinedByteArray[i] = decipherByteArrayClumps[clumpNumber].get(0);
-            decipherByteArrayClumps[clumpNumber].remove(0);
-        }
+        int positionInFinalArray = 0;
+        for (int clump = 0; clump < decipherByteArrayClumps.length; clump++) {
 
+            for (int i = 0; i < decipherByteArrayClumps[clump].size(); i++) {
+                finalJoinedByteArray[positionInFinalArray] = decipherByteArrayClumps[clump].get(i);
+                positionInFinalArray++;
+            }
+        }
         storeDecipherFile(finalJoinedByteArray);
 
     }
 
     public void storeDecipherFile(byte[] finalByteArray){
-
 
         FileOutputStream fos = null;
         try {
