@@ -25,7 +25,6 @@ public class ThreadManager {
         }
 
         return true;
-
     }
 
     public boolean manageCipherThreads(String cipherStoreDirectory,FileDeposit currentFileDeposit){

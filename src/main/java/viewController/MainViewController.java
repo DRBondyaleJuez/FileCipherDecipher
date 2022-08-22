@@ -1,7 +1,6 @@
 package viewController;
 
 import controller.Controller;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.image.Image;
@@ -38,28 +37,27 @@ public class MainViewController implements Initializable {
         try {
             Image mainImage = new Image(getClass().getResource("/images/cipherLock.png").toURI().toString());
             mainImageView.setImage(mainImage);
-
-        } catch (URISyntaxException e) {
+        } catch (URISyntaxException | NullPointerException e) {
             e.printStackTrace();
             System.out.println("mainImage could not be found");
         }
     }
 
-    public void openAction(ActionEvent event){
+    @FXML
+    public void openAction(){
         FileChooser fileChooser = new FileChooser();
         File selectedFile = fileChooser.showOpenDialog(null);
 
         if(selectedFile != null) {
-            System.out.println(selectedFile.toString());
+            System.out.println(selectedFile.getAbsolutePath());
+            controller.cipherFile(selectedFile);
         } else {
             System.out.println("No file has been selected.");
         }
-
-        controller.cipherFile(selectedFile);
-
     }
 
-    public void decipherAction(ActionEvent event){
+    @FXML
+    public void decipherAction(){
         DirectoryChooser dirChooser = new DirectoryChooser();
 
         Stage stage = (Stage) mainAnchorPane.getScene().getWindow();
@@ -67,14 +65,12 @@ public class MainViewController implements Initializable {
         File selectedFile = dirChooser.showDialog(stage);
 
         if(selectedFile != null) { // Also check that the directory contains files with the extension .cipher
-            System.out.println(selectedFile.toString());
+            System.out.println(selectedFile.getAbsolutePath());
             controller.decipherFiles(selectedFile);
         } else {
             System.out.println("No file has been selected.");
         }
     }
-
-
 }
 
 

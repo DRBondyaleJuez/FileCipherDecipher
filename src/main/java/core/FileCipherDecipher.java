@@ -30,7 +30,6 @@ public class FileCipherDecipher extends Application {
         Parent root = loadPaneLoader(paneLoader);
         Scene newScene = new Scene(root);
         mainStage.setScene(newScene);
-
     }
 
     private Parent loadPaneLoader(FXMLLoader paneLoader) {

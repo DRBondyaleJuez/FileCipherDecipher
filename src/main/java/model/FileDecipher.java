@@ -38,7 +38,6 @@ public class FileDecipher implements Runnable{
         decipherByteList = new ArrayList<>();
 
         System.out.println("FileDecipher with id number " + id + " was constructed"); ///////////////////////////////DELETE WHEN FINISHED
-
     }
 
 

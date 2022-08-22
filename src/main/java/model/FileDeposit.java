@@ -65,7 +65,4 @@ public class FileDeposit {
         fileReadyToCipherList.add(fileDivided);
         notifyAll();
     }
-
-
-
 }

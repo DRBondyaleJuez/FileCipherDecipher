@@ -41,8 +41,8 @@ public class FileJoiner {
                 positionInFinalArray++;
             }
         }
-        storeDecipherFile(finalJoinedByteArray);
 
+        storeDecipherFile(finalJoinedByteArray);
     }
 
     public void storeDecipherFile(byte[] finalByteArray){
@@ -64,10 +64,5 @@ public class FileJoiner {
                 System.out.println("Unable to write bytes of cipher file: " + decipherFileStorage);
             }
         }
-
-
     }
-
-
-
 }

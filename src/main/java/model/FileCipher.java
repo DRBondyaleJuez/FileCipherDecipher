@@ -69,7 +69,6 @@ public class FileCipher implements Runnable{
 
         File fileToCipher = new File(fileToCipherPath);
         return fileToCipher;
-
     }
 
     private byte[] getByteArrayFromDividedFile(File processedFile){
@@ -95,7 +94,6 @@ public class FileCipher implements Runnable{
         }
 
         return xoredArray;
-
     }
 
 
@@ -139,8 +137,5 @@ public class FileCipher implements Runnable{
                 System.out.println("Unable to write bytes y key file");
             }
         }
-
     }
-
-
 }

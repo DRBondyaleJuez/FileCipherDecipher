@@ -61,7 +61,6 @@ public class FileDivider implements Runnable{
             storeFileDivision(partNumber,partByteArray);
             System.out.println("Thread of file divider "+id+" finished storing the file part "+partNumber); ///////////////////////////////DELETE WHEN FINISHED
         }
-
     }
 
     //Method to divide and store file division
