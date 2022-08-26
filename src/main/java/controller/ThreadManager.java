@@ -11,19 +11,27 @@ public class ThreadManager {
     public ThreadManager() {
     }
 
-    public boolean manageDividerThreads(byte[] file, FileDeposit currentFileDeposit, String fileName, String saveDirectory){
+    public boolean manageDividerThreads(byte[] file, FileDeposit currentFileDeposit, String fileName, String saveDirectory) {
 
         //5 threads max
         int numberOfThreads = 5;
 
-        if(currentFileDeposit.viewTotalNumberOfParts() < numberOfThreads){numberOfThreads= currentFileDeposit.viewTotalNumberOfParts();}
-
-        for (int i = 0; i < numberOfThreads; i++) {
-            FileDivider fileDivider = new FileDivider(file,fileName,saveDirectory,currentFileDeposit);
-            Thread thread = new Thread(fileDivider);
-            thread.start();
+        if (currentFileDeposit.viewTotalNumberOfParts() < numberOfThreads) {
+            numberOfThreads = currentFileDeposit.viewTotalNumberOfParts();
         }
 
+        for (int i = 0; i < numberOfThreads; i++) {
+            FileDivider fileDivider = new FileDivider(file, fileName, saveDirectory, currentFileDeposit);
+            Thread thread = new Thread(fileDivider);
+            thread.start();
+            try {
+                thread.join();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        System.out.println("If no error message has been displayed the divided parts of the file and key should be correctly stored in this path: " + saveDirectory);
         return true;
     }
 
@@ -38,7 +46,15 @@ public class ThreadManager {
             FileCipher fileCipher = new FileCipher(cipherStoreDirectory,currentFileDeposit);
             Thread thread = new Thread(fileCipher);
             thread.start();
+
+            try {
+                thread.join();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
         }
+
+        System.out.println("If no error message has been displayed the cipher parts of the file and key should be correctly stored in this path: " + cipherStoreDirectory);
 
         return true;
     }
@@ -96,6 +112,7 @@ public class ThreadManager {
         }
 
         //Final actions of the fileJoiner once all the bytes are there
+        System.out.println("Starting Final Joining"); ///////////////////////////////////////DELETE AFTER FINISH
         currentFileJoiner.decipherByteJoiner();
 
         System.out.println("If no error message has been displayed the file should be correctly stored in this path: " + decipherStoreDirectory);
@@ -103,7 +120,7 @@ public class ThreadManager {
         return true;
     }
 
-    //TO DO: CHECK IF THE NUMBER OF FILES IN THE CIPHER FOLDER ARE EQUAL TO THE NUMBER OF PARTS AND INTERRUPT THE TWO CIPHERS
+
 
 
 }

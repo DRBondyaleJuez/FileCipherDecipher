@@ -51,6 +51,8 @@ public class FileDecipher implements Runnable{
             for (int j = 0; j < byteArrayReadyForFirstJoining.length; j++) {
                 addDecipherByte(byteArrayReadyForFirstJoining[j]);
             }
+            System.out.println("I am thread " + id + ". Part " + i + "unXORted added"); ////////////////////////////////DELETE AFTER FINISH
+
         }
 
         //After processing all files in the list the ordered bytes are sent to fileJoiner for final joining

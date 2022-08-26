@@ -66,9 +66,14 @@ public class FileDivider implements Runnable{
     //Method to divide and store file division
     private void  storeFileDivision(int partNumber,byte[] partByteArrayToStore){
 
+        String partNumberZeros = "";
+        if(partNumber < 100){ partNumberZeros = partNumberZeros + 0;}
+        if(partNumber < 10){ partNumberZeros = partNumberZeros + 0;}
+
+
         FileOutputStream fos = null;
         try {
-            fos = new FileOutputStream(saveDirectory + "\\" + fileName + "_part" + partNumber + ".txt");
+            fos = new FileOutputStream(saveDirectory + "\\" + fileName + "_part" + partNumberZeros + partNumber + ".txt");
         } catch (FileNotFoundException e) {
             e.printStackTrace();
             System.out.println("Unable to find a file to store divided bytes: " + fileName +"_"+partNumber);
@@ -84,7 +89,7 @@ public class FileDivider implements Runnable{
             }
         }
 
-        fileDeposit.addFileReadyToCipher(saveDirectory + "\\" + fileName + "_part" + partNumber + ".txt");
+        fileDeposit.addFileReadyToCipher(saveDirectory + "\\" + fileName + "_part" + partNumberZeros + partNumber + ".txt");
     }
 
 }

@@ -29,7 +29,6 @@ public class Controller {
         String fileName = fileNameAndFormat.replace("."+fileFormat,"");
 
 
-
         //DIVISION
 
         //Obtaining file in byte array form
