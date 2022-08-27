@@ -10,7 +10,7 @@ public class Controller {
 
     private File directoryToStoreDividedFile;
     private File directoryToStoreCipherFile;
-    private ThreadManager threadManager;
+    private final ThreadManager threadManager;
     private File directoryToStoreDecipherFile;
 
     public Controller() {
@@ -32,7 +32,7 @@ public class Controller {
         //DIVISION
 
         //Obtaining file in byte array form
-        byte[] fileByteArray = null;
+        byte[] fileByteArray;
 
         try {
             fileByteArray = Files.readAllBytes(file.toPath());
@@ -53,7 +53,7 @@ public class Controller {
         File dividedFilesDir = new File(projectPath);
 
         if (! dividedFilesDir.exists()) {
-            dividedFilesDir.mkdirs();
+            dividedFilesDir.mkdirs(); ////// I DON'T UNDERSTAND THE WARNING
         }
 
         //Managing thread for file division
@@ -65,7 +65,7 @@ public class Controller {
         projectPath = directoryToStoreCipherFile.toString()+"\\" + fileName +"_"+fileFormat;
         File cipherFilesDir  = new File(projectPath);
         if (! cipherFilesDir.exists()) {
-            cipherFilesDir.mkdirs();
+            cipherFilesDir.mkdirs(); ////// I DON'T UNDERSTAND THE WARNING
         }
 
         //Managing thread for file cipher
@@ -80,6 +80,8 @@ public class Controller {
     public void decipherFiles(File cipheredFilesFolder){
 
         String[] cipheredFileNames = cipheredFilesFolder.list();
+
+        if(cipheredFileNames == null){return;}
 
         int numberOfFilesToDecipher = cipheredFileNames.length-1;
         if(numberOfFilesToDecipher <= 0) {
@@ -99,7 +101,7 @@ public class Controller {
         //Extracting and separating Key and cipheredFileNames
 
         String[] filesPathsNoKey = new String[numberOfFilesToDecipher];
-        String keyFilePath = "";
+        String keyFilePath;
 
         if(cipheredFileNames[0].equals("KEY.cipher")){
             for (int i = 1; i < numberOfFilesToDecipher+1; i++) {
@@ -125,26 +127,26 @@ public class Controller {
         File dividedFilesDir = new File("WorkingFolder\\defaultFolder\\fileDivisions");
 
         if (! dividedFilesDir.exists()) {
-            dividedFilesDir.mkdirs();
+            dividedFilesDir.mkdirs(); ////// I DON'T UNDERSTAND THE WARNING
         }
         directoryToStoreDividedFile = dividedFilesDir;
 
         File cipherFilesDir = new File("WorkingFolder\\defaultFolder\\fileCipher");
         if (! cipherFilesDir.exists()) {
-            cipherFilesDir.mkdirs();
+            cipherFilesDir.mkdirs(); ////// I DON'T UNDERSTAND THE WARNING
         }
         directoryToStoreCipherFile = cipherFilesDir;
 
         File decipherFilesDir = new File("WorkingFolder\\defaultFolder\\fileDecipher");
         if (! decipherFilesDir.exists()) {
-            decipherFilesDir.mkdirs();
+            decipherFilesDir.mkdirs(); ////// I DON'T UNDERSTAND THE WARNING
         }
 
         directoryToStoreDecipherFile = decipherFilesDir;
     }
 
     private int numberOfPartsBasedOnFileSize(File file){
-        int numberOfParts = 1;
+        int numberOfParts;
 
         double fileSizeInKb = (double) file.length()/1024;
         double fileSizeInMb = fileSizeInKb/1024;

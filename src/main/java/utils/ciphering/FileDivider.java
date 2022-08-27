@@ -6,9 +6,9 @@ import java.io.*;
 
 public class FileDivider implements Runnable{
 
-    private int id;
-    private byte[] file;
-    private String fileName;
+    private final int id;
+    private final byte[] file;
+    private final String fileName;
     private static String saveDirectory;
     private static FileDeposit fileDeposit;
 
@@ -42,15 +42,10 @@ public class FileDivider implements Runnable{
 
             //Calculate bytes based on Part
             int startPosInFile = partNumber * sizeOfEachPart;
-            int sizeOfThisPart = sizeOfEachPart;
-            if(file.length-startPosInFile < sizeOfEachPart){
-                sizeOfThisPart = file.length-startPosInFile;
-            }
+            int sizeOfThisPart = Math.min(file.length - startPosInFile, sizeOfEachPart);
 
             byte[] partByteArray = new byte[sizeOfThisPart];
-            for (int i = 0; i < sizeOfThisPart; i++) {
-                partByteArray[i] = file[startPosInFile+i];
-            }
+            System.arraycopy(file, startPosInFile, partByteArray, 0, sizeOfThisPart);
 
             //Store
             storeFileDivision(partNumber,partByteArray);
@@ -68,7 +63,7 @@ public class FileDivider implements Runnable{
 
         FileOutputStream fos = null;
         try {
-            fos = new FileOutputStream(saveDirectory + "\\" + fileName + "_part" + partNumberZeros + partNumber + ".txt");
+            fos = new FileOutputStream(saveDirectory + "\\" + fileName + "_part" + partNumberZeros + partNumber + ".txt"); ///// NOT ABLE TO SOLVE WARNING
         } catch (FileNotFoundException e) {
             e.printStackTrace();
             System.out.println("Unable to find a file to store divided bytes: " + fileName +"_"+partNumber);

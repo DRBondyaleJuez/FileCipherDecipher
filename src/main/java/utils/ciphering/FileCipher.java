@@ -8,7 +8,7 @@ import java.util.Random;
 
 public class FileCipher implements Runnable{
 
-    private int id;
+    private final int id;
     private static String saveCipherDirectory;
     private static FileDeposit fileDeposit;
     private static byte[] key;
@@ -66,8 +66,7 @@ public class FileCipher implements Runnable{
         String fileToCipherPath = fileDeposit.getFileReadyToCipher();
         if(fileToCipherPath == null){return null;}
 
-        File fileToCipher = new File(fileToCipherPath);
-        return fileToCipher;
+        return new File(fileToCipherPath);
     }
 
     private byte[] getByteArrayFromDividedFile(File processedFile){
@@ -100,7 +99,7 @@ public class FileCipher implements Runnable{
 
         FileOutputStream fos = null;
         try {
-            fos = new FileOutputStream(saveCipherDirectory + "\\" + fileName);
+            fos = new FileOutputStream(saveCipherDirectory + "\\" + fileName);///// NOT ABLE TO SOLVE WARNING
         } catch (FileNotFoundException e) {
             e.printStackTrace();
             System.out.println("Unable to find a file to store cipher bytes: " + fileName);
@@ -121,7 +120,7 @@ public class FileCipher implements Runnable{
 
         FileOutputStream fos = null;
         try {
-            fos = new FileOutputStream(saveCipherDirectory + "\\KEY.cipher");
+            fos = new FileOutputStream(saveCipherDirectory + "\\KEY.cipher");///// NOT ABLE TO SOLVE WARNING
         } catch (FileNotFoundException e) {
             e.printStackTrace();
             System.out.println("Unable to find a file to store key bytes");

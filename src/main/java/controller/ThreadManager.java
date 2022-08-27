@@ -11,7 +11,7 @@ public class ThreadManager {
     public ThreadManager() {
     }
 
-    public boolean manageDividerThreads(byte[] file, FileDeposit currentFileDeposit, String fileName, String saveDirectory) {
+    public void manageDividerThreads(byte[] file, FileDeposit currentFileDeposit, String fileName, String saveDirectory) {
 
         //5 threads max
         int numberOfThreads = 5;
@@ -20,7 +20,7 @@ public class ThreadManager {
             numberOfThreads = currentFileDeposit.viewTotalNumberOfParts();
         }
 
-        Thread thread = null;
+        Thread thread;
 
         for (int i = 0; i < numberOfThreads; i++) {
             FileDivider fileDivider = new FileDivider(file, fileName, saveDirectory, currentFileDeposit,i);
@@ -29,11 +29,9 @@ public class ThreadManager {
         }
 
         System.out.println("If no error message has been displayed the divided parts of the file and key should be correctly stored in this path: " + saveDirectory);
-
-        return true;
     }
 
-    public boolean manageCipherThreads(String cipherStoreDirectory,FileDeposit currentFileDeposit){
+    public void manageCipherThreads(String cipherStoreDirectory,FileDeposit currentFileDeposit){
 
         //2 threads max
         int numberOfThreads = 2;
@@ -49,6 +47,7 @@ public class ThreadManager {
         }
 
         try {
+            assert thread != null;
             thread.join();
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
@@ -56,11 +55,9 @@ public class ThreadManager {
             throw new NullPointerException("Thread of fileCipher not able to properly initialize");
         }
         System.out.println("If no error message has been displayed the cipher parts of the file and key should be correctly stored in this path: " + cipherStoreDirectory);
-
-        return true;
     }
 
-    public boolean manageDecipherThreads(String[] arrayOfFilePaths,String keyPath, String decipherStoreDirectory){
+    public void manageDecipherThreads(String[] arrayOfFilePaths,String keyPath, String decipherStoreDirectory){
 
         //Identify number of files to decipher
         int numberOfFilesToDecipher = arrayOfFilePaths.length;
@@ -93,9 +90,7 @@ public class ThreadManager {
             }
 
             String[] subArrayForThisThread = new String[endPos - startPos + 1];
-            for (int j = 0; j < subArrayForThisThread.length; j++) {
-                subArrayForThisThread[j] = arrayOfFilePaths[startPos+j];
-            }
+            System.arraycopy(arrayOfFilePaths, startPos, subArrayForThisThread, 0, subArrayForThisThread.length);
 
             fileDecipherArray[i] = new FileDecipher(subArrayForThisThread,keyPath,currentFileJoiner,i);
             System.out.println("FileDecipher " +i+ " Created"); ////////////////////////////////////// DELETE WHEN FINISHED
@@ -123,8 +118,6 @@ public class ThreadManager {
         currentFileJoiner.decipherByteJoiner();
 
         System.out.println("If no error message has been displayed the file should be correctly stored in this path: " + decipherStoreDirectory);
-
-        return true;
     }
 
 

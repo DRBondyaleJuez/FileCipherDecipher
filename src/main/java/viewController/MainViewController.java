@@ -13,6 +13,7 @@ import javafx.stage.Stage;
 import java.io.File;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
 public class MainViewController implements Initializable {
@@ -35,7 +36,7 @@ public class MainViewController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         try {
-            Image mainImage = new Image(getClass().getResource("/images/cipherLock.png").toURI().toString());
+            Image mainImage = new Image(Objects.requireNonNull(getClass().getResource("/images/cipherLock.png")).toURI().toString()); //// MOSTRABA UNA ADVERTENCIA Y LA SOLUCIÓN FUE ESE object.requireNonNUL
             mainImageView.setImage(mainImage);
         } catch (URISyntaxException | NullPointerException e) {
             e.printStackTrace();
