@@ -1,10 +1,10 @@
-package model;
+package utils.ciphering;
+
+import model.FileDeposit;
 
 import java.io.*;
 import java.nio.file.Files;
-import java.util.ArrayList;
 import java.util.Random;
-import java.util.Scanner;
 
 public class FileCipher implements Runnable{
 

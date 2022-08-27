@@ -1,10 +1,10 @@
 package controller;
 
 import model.*;
-
-import java.io.File;
-import java.nio.file.Files;
-import java.util.ArrayList;
+import utils.ciphering.FileCipher;
+import utils.deciphering.FileDecipher;
+import utils.ciphering.FileDivider;
+import utils.deciphering.FileJoiner;
 
 public class ThreadManager {
 
