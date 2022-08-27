@@ -46,7 +46,7 @@ public class Controller {
         int numberOfParts = numberOfPartsBasedOnFileSize(file);
 
         //Creating File Deposit
-        FileDeposit currentFileDeposit = new FileDeposit(numberOfParts,null);
+        FileDeposit currentFileDeposit = new FileDeposit(numberOfParts);
 
         //Creating the folder to store divisions
         String projectPath = directoryToStoreDividedFile.toString()+"\\" + fileName + "_" + fileFormat;

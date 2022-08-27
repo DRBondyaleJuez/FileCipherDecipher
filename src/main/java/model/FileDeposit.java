@@ -8,15 +8,13 @@ public class FileDeposit {
     int numberOfFilesCipher;
     int numberOfPartsDivided;
     ArrayList<String> fileReadyToCipherList;
-    ArrayList<String> partReadyToDecipherList;
 
-    public FileDeposit(int partsToBeDivided, ArrayList<String> partReadyToDecipherList) {
+    public FileDeposit(int partsToBeDivided) {
 
         totalNumberOfParts = partsToBeDivided;
         numberOfFilesCipher = 0;
         numberOfPartsDivided = 0;
         this.fileReadyToCipherList = new ArrayList<>();
-        this.partReadyToDecipherList = partReadyToDecipherList;
     }
 
     public synchronized int getPartToDivide(){
@@ -53,12 +51,6 @@ public class FileDeposit {
         String fileReadyToCipher = fileReadyToCipherList.get(0);
         fileReadyToCipherList.remove(0);
         return fileReadyToCipher;
-    }
-
-    public synchronized String getPartReadyToDecipher(){
-        String filePartReadyToDecipher = partReadyToDecipherList.get(0);
-        partReadyToDecipherList.remove(0);
-        return filePartReadyToDecipher;
     }
 
     public synchronized void addFileReadyToCipher(String fileDivided){

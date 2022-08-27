@@ -20,18 +20,16 @@ public class ThreadManager {
             numberOfThreads = currentFileDeposit.viewTotalNumberOfParts();
         }
 
+        Thread thread = null;
+
         for (int i = 0; i < numberOfThreads; i++) {
-            FileDivider fileDivider = new FileDivider(file, fileName, saveDirectory, currentFileDeposit);
-            Thread thread = new Thread(fileDivider);
+            FileDivider fileDivider = new FileDivider(file, fileName, saveDirectory, currentFileDeposit,i);
+            thread = new Thread(fileDivider);
             thread.start();
-            try {
-                thread.join();
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
         }
 
         System.out.println("If no error message has been displayed the divided parts of the file and key should be correctly stored in this path: " + saveDirectory);
+
         return true;
     }
 
@@ -42,18 +40,21 @@ public class ThreadManager {
 
         if(currentFileDeposit.viewTotalNumberOfParts() < numberOfThreads){numberOfThreads=currentFileDeposit.viewTotalNumberOfParts();}
 
-        for (int i = 0; i < numberOfThreads; i++) {
-            FileCipher fileCipher = new FileCipher(cipherStoreDirectory,currentFileDeposit);
-            Thread thread = new Thread(fileCipher);
-            thread.start();
+        Thread thread = null;
 
-            try {
-                thread.join();
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
+        for (int i = 0; i < numberOfThreads; i++) {
+            FileCipher fileCipher = new FileCipher(cipherStoreDirectory,currentFileDeposit,i);
+            thread = new Thread(fileCipher);
+            thread.start();
         }
 
+        try {
+            thread.join();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        } catch (NullPointerException nE){
+            throw new NullPointerException("Thread of fileCipher not able to properly initialize");
+        }
         System.out.println("If no error message has been displayed the cipher parts of the file and key should be correctly stored in this path: " + cipherStoreDirectory);
 
         return true;
@@ -96,18 +97,24 @@ public class ThreadManager {
                 subArrayForThisThread[j] = arrayOfFilePaths[startPos+j];
             }
 
-            fileDecipherArray[i] = new FileDecipher(subArrayForThisThread,keyPath,currentFileJoiner);
+            fileDecipherArray[i] = new FileDecipher(subArrayForThisThread,keyPath,currentFileJoiner,i);
             System.out.println("FileDecipher " +i+ " Created"); ////////////////////////////////////// DELETE WHEN FINISHED
         }
 
         //Start of fileDecipher threads
+        Thread[] threads = new Thread[numberOfThreads];
         for (int i = 0; i < numberOfThreads; i++) {
-            Thread thread = new Thread(fileDecipherArray[i]);
-            thread.start();
+            threads[i] = new Thread(fileDecipherArray[i]);
+            threads[i].start();
+        }
+
+        for (int i = 0; i < numberOfThreads; i++) {
             try {
-                thread.join();
+                threads[i].join();
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
+            } catch (NullPointerException nE){
+                throw new NullPointerException("Thread of fileDecipher not able to properly initialize");
             }
         }
 

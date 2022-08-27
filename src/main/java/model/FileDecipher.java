@@ -13,27 +13,24 @@ public class FileDecipher implements Runnable{
     //An array based on file size to keep track of the files that have been ciphered
 
     //Don't forget the builder
-    private static int numberOfThreads = 0;
+
     private int id;
     private String[] pathsOfFilesToDecipher;
     private ArrayList<Byte> decipherByteList;
-    private  static byte[] decipherKey;
-    private static FileJoiner fileJoiner;
+    private byte[] decipherKey;
+    private FileJoiner fileJoiner;
 
-    public FileDecipher(String[] pathsOfFilesToDecipher,String keyFileString, FileJoiner fileJoiner) {
+    public FileDecipher(String[] pathsOfFilesToDecipher,String keyFileString, FileJoiner fileJoiner,int threadId) {
 
-        if(numberOfThreads == 0){
-            FileDecipher.fileJoiner = fileJoiner;
+            this.fileJoiner = fileJoiner;
             try {
                 decipherKey = Files.readAllBytes(Path.of(keyFileString));
             } catch (IOException e) {
                 e.printStackTrace();
                 System.out.println("Was not able to convert key file to byte array");
             }
-        }
 
-        id = numberOfThreads;
-        numberOfThreads++;
+        id = threadId;
         this.pathsOfFilesToDecipher = pathsOfFilesToDecipher;
         decipherByteList = new ArrayList<>();
 

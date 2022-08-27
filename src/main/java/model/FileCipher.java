@@ -8,21 +8,19 @@ import java.util.Scanner;
 
 public class FileCipher implements Runnable{
 
-
-    private static int numberOfThreads = 0;
     private int id;
     private static String saveCipherDirectory;
     private static FileDeposit fileDeposit;
     private static byte[] key;
 
 
-    public FileCipher(String saveCipherDirectory,FileDeposit currentFileDeposit) {
+    public FileCipher(String saveCipherDirectory,FileDeposit currentFileDeposit,int threadId) {
 
-        id = numberOfThreads;
-        numberOfThreads++;
-        FileCipher.saveCipherDirectory = saveCipherDirectory;
+        id = threadId;
+
         //Setting of two attributes which must not be restarted by other thread and only started by the first who reaches this point
-        if(fileDeposit == null) {
+        if(threadId == 0) {
+            FileCipher.saveCipherDirectory = saveCipherDirectory;
             FileCipher.fileDeposit = currentFileDeposit;
 
             //Generating key
@@ -31,6 +29,7 @@ public class FileCipher implements Runnable{
             randomGenerator.nextBytes(key);
             storeKey();
         }
+        System.out.println("FileCipher with id number " + id + " was constructed"); ///////////////////////////////DELETE WHEN FINISHED
     }
 
 
@@ -44,20 +43,20 @@ public class FileCipher implements Runnable{
             //GetFile content in byte array format
             File fileToProcess = getNextFile();
             if(fileToProcess == null){break;} //This has to do with threads that are waiting in the getNextFile method when there is no file Not sure how to finish those
-            System.out.println(id+"File to cipher obtained"+fileToProcess.getName()); ///////////////////////////////////////////////DELETE WHEN FINISHED
+            System.out.println("I am thread " +id+". File to cipher obtained"+fileToProcess.getName()); ///////////////////////////////////////////////DELETE WHEN FINISHED
 
             String fileName = fileToProcess.getName().replace(".txt",".cipher");
             byte[] byteContentFileToProcess = getByteArrayFromDividedFile(fileToProcess);
-            System.out.println(id+"Byte array from file to cipher obtained"+fileToProcess.getName()); ////////////////////////////////////// DELETE WHEN FINISHED
+            System.out.println("I am thread " +id+". Byte array from file to cipher obtained "+fileToProcess.getName()); ////////////////////////////////////// DELETE WHEN FINISHED
 
 
             //XORting
             byte[] xortedByteArray = xorCipherByteArray(currentKey,byteContentFileToProcess);
-            System.out.println(id+"File byte Array XORted"+fileToProcess.getName());
+            System.out.println("I am thread " +id+". File byte Array XORted "+fileToProcess.getName());
 
             //Storing
             storeCipherFilePart(xortedByteArray,fileName);
-            System.out.println(id+"File byte Array stored"+fileToProcess.getName());
+            System.out.println("I am thread " +id+". File byte Array stored "+fileToProcess.getName());
         }
 
     }

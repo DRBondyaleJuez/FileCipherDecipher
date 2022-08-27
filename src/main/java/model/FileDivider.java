@@ -6,28 +6,23 @@ import java.util.ArrayList;
 
 public class FileDivider implements Runnable{
 
-    private static int numberOfThreads = 0;
     private int id;
     private byte[] file;
     private String fileName;
     private static String saveDirectory;
     private static FileDeposit fileDeposit;
 
-    public FileDivider(byte[] file,String fileName,String saveDirectory,FileDeposit currentFileDeposit) {
+    public FileDivider(byte[] file,String fileName,String saveDirectory,FileDeposit currentFileDeposit,int threadId) {
 
-        id = numberOfThreads;
-        numberOfThreads++;
+        id = threadId;
         this.file = file;
         this.fileName = fileName;
         FileDivider.saveDirectory = saveDirectory;
-        if(fileDeposit == null){
+        if(threadId == 0){
             FileDivider.fileDeposit = currentFileDeposit;
         }
         System.out.println("FileDivider with id number " + id + " was constructed"); ///////////////////////////////DELETE WHEN FINISHED
 
-    }
-
-    public FileDivider() {
     }
 
 
