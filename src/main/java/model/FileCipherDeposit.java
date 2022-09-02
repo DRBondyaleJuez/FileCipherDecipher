@@ -2,14 +2,14 @@ package model;
 
 import java.util.ArrayList;
 
-public class FileDeposit {
+public class FileCipherDeposit {
 
-    private int totalNumberOfParts;
+    private final int totalNumberOfParts;
     private int numberOfFilesCipher;
     private int numberOfPartsDivided;
-    ArrayList<String> fileReadyToCipherList;
+    private final ArrayList<String> fileReadyToCipherList;
 
-    public FileDeposit(int partsToBeDivided) {
+    public FileCipherDeposit(int partsToBeDivided) {
 
         totalNumberOfParts = partsToBeDivided;
         numberOfFilesCipher = 0;

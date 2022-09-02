@@ -1,34 +1,26 @@
 package utils.ciphering;
 
-import model.FileDeposit;
+import model.FileCipherDeposit;
 
 import java.io.*;
 import java.nio.file.Files;
-import java.util.Random;
 
 public class FileCipher implements Runnable{
 
     private final int id;
-    private static String saveCipherDirectory;
-    private static FileDeposit fileDeposit;
+    private final String saveCipherDirectory;
+    private final FileCipherDeposit fileCipherDeposit;
     private static byte[] key;
 
-
-    public FileCipher(String saveCipherDirectory,FileDeposit currentFileDeposit,int threadId) {
-
+    public FileCipher(String saveCipherDirectory, FileCipherDeposit currentFileCipherDeposit, byte[] keyByteArray, int threadId) {
         id = threadId;
-
-        //Setting of two attributes which must not be restarted by other thread and only started by the first who reaches this point
-        if(threadId == 0) {
-            FileCipher.saveCipherDirectory = saveCipherDirectory;
-            FileCipher.fileDeposit = currentFileDeposit;
-
-            //Generating key
-            FileCipher.key = new byte[256];
-            Random randomGenerator = new Random();
-            randomGenerator.nextBytes(key);
+        this.saveCipherDirectory = saveCipherDirectory;
+        this.fileCipherDeposit = currentFileCipherDeposit;
+        key = keyByteArray;
+        if(threadId == 0){ //Only store the key the first time
             storeKey();
         }
+
         System.out.println("FileCipher with id number " + id + " was constructed"); ///////////////////////////////DELETE WHEN FINISHED
     }
 
@@ -36,7 +28,7 @@ public class FileCipher implements Runnable{
     @Override
     public void run() {
 
-        while(fileDeposit.viewTotalNumberOfFileCipher() < fileDeposit.viewTotalNumberOfParts()) {
+        while(fileCipherDeposit.viewTotalNumberOfFileCipher() < fileCipherDeposit.viewTotalNumberOfParts()) {
             //Generate key
             byte[] currentKey = key;
 
@@ -61,9 +53,8 @@ public class FileCipher implements Runnable{
 
     }
 
-    private  File getNextFile(){
-
-        String fileToCipherPath = fileDeposit.getFileReadyToCipher();
+    private File getNextFile(){
+        String fileToCipherPath = fileCipherDeposit.getFileReadyToCipher();
         if(fileToCipherPath == null){return null;}
 
         return new File(fileToCipherPath);
