@@ -4,9 +4,9 @@ import java.util.ArrayList;
 
 public class FileDeposit {
 
-    int totalNumberOfParts;
-    int numberOfFilesCipher;
-    int numberOfPartsDivided;
+    private int totalNumberOfParts;
+    private int numberOfFilesCipher;
+    private int numberOfPartsDivided;
     ArrayList<String> fileReadyToCipherList;
 
     public FileDeposit(int partsToBeDivided) {
