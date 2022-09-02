@@ -6,24 +6,26 @@ import utils.deciphering.FileDecipher;
 import utils.ciphering.FileDivider;
 import utils.deciphering.FileJoiner;
 
+import java.util.Random;
+
 public class ThreadManager {
 
     public ThreadManager() {
     }
 
-    public void manageDividerThreads(byte[] file, FileDeposit currentFileDeposit, String fileName, String saveDirectory) {
+    public void manageDividerThreads(byte[] file, FileCipherDeposit currentFileCipherDeposit, String fileName, String saveDirectory) {
 
         //5 threads max
         int numberOfThreads = 5;
 
-        if (currentFileDeposit.viewTotalNumberOfParts() < numberOfThreads) {
-            numberOfThreads = currentFileDeposit.viewTotalNumberOfParts();
+        if (currentFileCipherDeposit.viewTotalNumberOfParts() < numberOfThreads) {
+            numberOfThreads = currentFileCipherDeposit.viewTotalNumberOfParts();
         }
 
         Thread thread;
 
         for (int i = 0; i < numberOfThreads; i++) {
-            FileDivider fileDivider = new FileDivider(file, fileName, saveDirectory, currentFileDeposit,i);
+            FileDivider fileDivider = new FileDivider(file, fileName, saveDirectory, currentFileCipherDeposit,i);
             thread = new Thread(fileDivider);
             thread.start();
         }
@@ -31,37 +33,40 @@ public class ThreadManager {
         System.out.println("If no error message has been displayed the divided parts of the file and key should be correctly stored in this path: " + saveDirectory);
     }
 
-    public void manageCipherThreads(String cipherStoreDirectory,FileDeposit currentFileDeposit){
+    public void manageCipherThreads(String cipherStoreDirectory, FileCipherDeposit currentFileCipherDeposit){
 
         //2 threads max
         int numberOfThreads = 2;
 
-        if(currentFileDeposit.viewTotalNumberOfParts() < numberOfThreads){numberOfThreads=currentFileDeposit.viewTotalNumberOfParts();}
+        if(currentFileCipherDeposit.viewTotalNumberOfParts() < numberOfThreads){numberOfThreads= currentFileCipherDeposit.viewTotalNumberOfParts();}
+        Thread[] threads = new Thread[numberOfThreads];
 
-        Thread thread = null;
+        byte[] keyByteArray =  new byte[256];
+        Random randomGenerator = new Random();
+        randomGenerator.nextBytes(keyByteArray);
 
         for (int i = 0; i < numberOfThreads; i++) {
-            FileCipher fileCipher = new FileCipher(cipherStoreDirectory,currentFileDeposit,i);
-            thread = new Thread(fileCipher);
-            thread.start();
+            FileCipher fileCipher = new FileCipher(cipherStoreDirectory, currentFileCipherDeposit,keyByteArray,i);
+            threads[i] = new Thread(fileCipher);
+            threads[i].start();
         }
 
-        try {
-            assert thread != null;
-            thread.join();
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        } catch (NullPointerException nE){
-            throw new NullPointerException("Thread of fileCipher not able to properly initialize");
+        for (Thread thread : threads) {
+            try {
+                if (thread != null) {
+                    thread.join();
+                }
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
         }
+
         System.out.println("If no error message has been displayed the cipher parts of the file and key should be correctly stored in this path: " + cipherStoreDirectory);
     }
 
     public void manageDecipherThreads(String[] arrayOfFilePaths,String keyPath, String decipherStoreDirectory){
-
         //Identify number of files to decipher
         int numberOfFilesToDecipher = arrayOfFilePaths.length;
-
 
         //3 threads max
         int numberOfThreads = 3;
@@ -71,28 +76,19 @@ public class ThreadManager {
         int numberOfPartsForEachThreadToDecipher = numberOfFilesToDecipher/numberOfThreads;
         int finalThreadPartsToDecipher = numberOfPartsForEachThreadToDecipher + numberOfFilesToDecipher%numberOfThreads;
 
-        //Creation FileJoiner
-        FileJoiner currentFileJoiner = new FileJoiner(numberOfThreads,decipherStoreDirectory);
-        System.out.println("FileJoiner Created"); ////////////////////////////////////// DELETE WHEN FINISHED
 
-        //Initialize a variable to create subarray with corresponding list of paths to decipher
+
+        //Creation FileDecipherDeposit
+        FileDecipherDeposit currentFileDecipherDeposit = new FileDecipherDeposit(numberOfFilesToDecipher);
+        System.out.println("FileDecipherDeposit Created"); ////////////////////////////////////// DELETE WHEN FINISHED
+
+        //Initialize the array of file decipher that will be created
         FileDecipher[] fileDecipherArray = new FileDecipher[numberOfThreads];
 
-        //Creation of fileDecipher threads with the particular list of files it is going to decipher, the key and the fileJoiner
+        //Creation of fileDecipher threads with the particular list of files it is going to decipher, the key, the fileDecipherDeposit and the fileJoiner
         for (int i = 0; i < numberOfThreads; i++) {
 
-            int startPos = i*numberOfPartsForEachThreadToDecipher;
-            int endPos = startPos+numberOfPartsForEachThreadToDecipher-1;
-
-            if(i == numberOfThreads-1) {
-                startPos = i*numberOfPartsForEachThreadToDecipher;
-                endPos = startPos+finalThreadPartsToDecipher-1;
-            }
-
-            String[] subArrayForThisThread = new String[endPos - startPos + 1];
-            System.arraycopy(arrayOfFilePaths, startPos, subArrayForThisThread, 0, subArrayForThisThread.length);
-
-            fileDecipherArray[i] = new FileDecipher(subArrayForThisThread,keyPath,currentFileJoiner,i);
+            fileDecipherArray[i] = new FileDecipher(arrayOfFilePaths,keyPath,currentFileDecipherDeposit,i);
             System.out.println("FileDecipher " +i+ " Created"); ////////////////////////////////////// DELETE WHEN FINISHED
         }
 
@@ -103,24 +99,34 @@ public class ThreadManager {
             threads[i].start();
         }
 
+        //File Joiner thread
+        //Creation FileJoiner
+        FileJoiner currentFileJoiner = new FileJoiner(currentFileDecipherDeposit,decipherStoreDirectory);
+        System.out.println("FileJoiner Created"); ////////////////////////////////////// DELETE WHEN FINISHED
+        Thread fileJoinerThread = new Thread(currentFileJoiner);
+        fileJoinerThread.start();
+        System.out.println("Starting Final Joining"); ///////////////////////////////////////DELETE AFTER FINISH
+
+        //TODO: Put the array of arrayList outside i.e. in the thread manager and give it to the file joiner or even think of making the writing process of the fos concurrent
+        //Think about making the threads return decipher byte array and writing them in file using append or something like that to keep adding to the decipher byte array to the final file
+        //in order
+        
         for (int i = 0; i < numberOfThreads; i++) {
             try {
-                threads[i].join();
+                if(threads[i] != null) {
+                    threads[i].join();
+                }
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
-            } catch (NullPointerException nE){
-                throw new NullPointerException("Thread of fileDecipher not able to properly initialize");
             }
         }
 
-        //Final actions of the fileJoiner once all the bytes are there
-        System.out.println("Starting Final Joining"); ///////////////////////////////////////DELETE AFTER FINISH
-        currentFileJoiner.decipherByteJoiner();
+        try {
+                fileJoinerThread.join();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
 
         System.out.println("If no error message has been displayed the file should be correctly stored in this path: " + decipherStoreDirectory);
     }
-
-
-
-
 }

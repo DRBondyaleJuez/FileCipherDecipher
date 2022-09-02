@@ -1,6 +1,6 @@
 package controller;
 
-import model.FileDeposit;
+import model.FileCipherDeposit;
 
 import java.io.File;
 import java.io.IOException;
@@ -46,18 +46,21 @@ public class Controller {
         int numberOfParts = numberOfPartsBasedOnFileSize(file);
 
         //Creating File Deposit
-        FileDeposit currentFileDeposit = new FileDeposit(numberOfParts);
+        FileCipherDeposit currentFileCipherDeposit = new FileCipherDeposit(numberOfParts);
 
         //Creating the folder to store divisions
         String projectPath = directoryToStoreDividedFile.toString()+"\\" + fileName + "_" + fileFormat;
         File dividedFilesDir = new File(projectPath);
 
         if (! dividedFilesDir.exists()) {
-            dividedFilesDir.mkdirs(); ////// I DON'T UNDERSTAND THE WARNING
+            boolean newDirectoryMade = dividedFilesDir.mkdirs(); ////// I DON'T UNDERSTAND THE WARNING
+            if(!newDirectoryMade){
+                System.out.println("Unable to make specific file divide directory");
+            }
         }
 
         //Managing thread for file division
-        threadManager.manageDividerThreads(fileByteArray,currentFileDeposit,fileName+"_"+fileFormat,projectPath);
+        threadManager.manageDividerThreads(fileByteArray, currentFileCipherDeposit,fileName+"_"+fileFormat,projectPath);
 
         //CIPHER
 
@@ -65,11 +68,14 @@ public class Controller {
         projectPath = directoryToStoreCipherFile.toString()+"\\" + fileName +"_"+fileFormat;
         File cipherFilesDir  = new File(projectPath);
         if (! cipherFilesDir.exists()) {
-            cipherFilesDir.mkdirs(); ////// I DON'T UNDERSTAND THE WARNING
+            boolean newDirectoryMade = cipherFilesDir.mkdirs(); ////// I DON'T UNDERSTAND THE WARNING
+            if(!newDirectoryMade){
+                System.out.println("Unable to make specific file cipher directory");
+            }
         }
 
         //Managing thread for file cipher
-        threadManager.manageCipherThreads(cipherFilesDir.toString(),currentFileDeposit);
+        threadManager.manageCipherThreads(cipherFilesDir.toString(), currentFileCipherDeposit);
         //Reassure file transfer while threads are working
     }
 
@@ -127,19 +133,28 @@ public class Controller {
         File dividedFilesDir = new File("WorkingFolder\\defaultFolder\\fileDivisions");
 
         if (! dividedFilesDir.exists()) {
-            dividedFilesDir.mkdirs(); ////// I DON'T UNDERSTAND THE WARNING
+            boolean newDirectoryMade = dividedFilesDir.mkdirs(); ////// I DON'T UNDERSTAND THE WARNING
+            if(!newDirectoryMade){
+                System.out.println("Unable to make divide directory");
+            }
         }
         directoryToStoreDividedFile = dividedFilesDir;
 
         File cipherFilesDir = new File("WorkingFolder\\defaultFolder\\fileCipher");
         if (! cipherFilesDir.exists()) {
-            cipherFilesDir.mkdirs(); ////// I DON'T UNDERSTAND THE WARNING
+            boolean newDirectoryMade = cipherFilesDir.mkdirs(); ////// I DON'T UNDERSTAND THE WARNING
+            if(!newDirectoryMade){
+                System.out.println("Unable to make cipher directory");
+            }
         }
         directoryToStoreCipherFile = cipherFilesDir;
 
         File decipherFilesDir = new File("WorkingFolder\\defaultFolder\\fileDecipher");
         if (! decipherFilesDir.exists()) {
-            decipherFilesDir.mkdirs(); ////// I DON'T UNDERSTAND THE WARNING
+            boolean newDirectoryMade = decipherFilesDir.mkdirs(); ////// I DON'T UNDERSTAND THE WARNING
+            if(!newDirectoryMade){
+                System.out.println("Unable to make decipher directory");
+            }
         }
 
         directoryToStoreDecipherFile = decipherFilesDir;
