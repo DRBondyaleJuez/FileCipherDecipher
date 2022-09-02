@@ -1,5 +1,7 @@
 package utils.deciphering;
 
+import model.FileDecipherDeposit;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -7,21 +9,14 @@ import java.util.ArrayList;
 
 public class FileDecipher implements Runnable{
 
-    //Perhaps an id attribute is not bad idea
-    //And a directory attribute
-    //An array based on file size to keep track of the files that have been ciphered
-
-    //Don't forget the builder
-
     private int id;
-    private String[] pathsOfFilesToDecipher;
-    private ArrayList<Byte> decipherByteList;
+    private final String[] pathsOfFilesToDecipher;
     private byte[] decipherKey;
-    private FileJoiner fileJoiner;
+    private final FileDecipherDeposit fileDecipherDeposit;
 
-    public FileDecipher(String[] pathsOfFilesToDecipher,String keyFileString, FileJoiner fileJoiner,int threadId) {
+    public FileDecipher(String[] pathsOfFilesToDecipher, String keyFileString, FileDecipherDeposit fileDecipherDeposit, int threadId) {
 
-            this.fileJoiner = fileJoiner;
+            this.fileDecipherDeposit = fileDecipherDeposit;
             try {
                 decipherKey = Files.readAllBytes(Path.of(keyFileString));
             } catch (IOException e) {
@@ -31,28 +26,29 @@ public class FileDecipher implements Runnable{
 
         id = threadId;
         this.pathsOfFilesToDecipher = pathsOfFilesToDecipher;
-        decipherByteList = new ArrayList<>();
 
         System.out.println("FileDecipher with id number " + id + " was constructed"); ///////////////////////////////DELETE WHEN FINISHED
     }
 
-
     @Override
     public void run() {
 
-        for (int i = 0; i < pathsOfFilesToDecipher.length; i++) {
-            byte[] byteArrayReadyForDecipher = getDecipherByteArray(i);
-            byte[] byteArrayReadyForFirstJoining = unXORArray(byteArrayReadyForDecipher);
+        while(fileDecipherDeposit.viewNumberOfPartsDeciphered() < fileDecipherDeposit.viewTotalNumberOfParts()){
+            int part = fileDecipherDeposit.getPartToDecipher();
+            if(part > fileDecipherDeposit.viewTotalNumberOfParts()){break;}
+            byte[] byteArrayReadyForDecipher = getDecipherByteArray(part);
+            byte[] byteArrayReadyForFiling = unXORArray(byteArrayReadyForDecipher);
 
-            for (int j = 0; j < byteArrayReadyForFirstJoining.length; j++) {
-                addDecipherByte(byteArrayReadyForFirstJoining[j]);
+            ArrayList<Byte> byteListReadyForFiling = new ArrayList<>();
+            for (byte b : byteArrayReadyForFiling) {
+                byteListReadyForFiling.add(b);
             }
-            System.out.println("I am thread " + id + ". Part " + i + "unXORted added"); ////////////////////////////////DELETE AFTER FINISH
+
+            fileDecipherDeposit.addBytesToFile(part,byteListReadyForFiling);
+
+            System.out.println("I am thread " + id + ". Part " + part + "unXORted added");
 
         }
-
-        //After processing all files in the list the ordered bytes are sent to fileJoiner for final joining
-        fileJoiner.add(decipherByteList,id);
     }
 
     //Convert file that needs deciphering to its byte array form
@@ -77,10 +73,5 @@ public class FileDecipher implements Runnable{
             unXoredArray[i] = (byte) (byteArrayToUnXOR[i] ^ decipherKey[i%256]);
         }
         return unXoredArray;
-    }
-
-    //Adding bytes to array in the order needed for final joining
-    public void addDecipherByte(Byte byteToAdd){
-        decipherByteList.add(byteToAdd);
     }
 }
