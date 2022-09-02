@@ -11,7 +11,7 @@ public class FileDecipherDeposit {
     public FileDecipherDeposit(int partsToBeDeciphered) {
         totalNumberOfParts = partsToBeDeciphered;
         numberOfPartsDeciphered = 0;
-        bytesReadyToFileArray = new ArrayList<>[partsToBeDeciphered]; /////////////////////////DON'T KNOW HOW TO FIX THIS WARNING
+        bytesReadyToFileArray = new ArrayList[partsToBeDeciphered]; /////////////////////////DON'T KNOW HOW TO FIX THIS WARNING
     }
 
     public synchronized int getPartToDecipher(){
