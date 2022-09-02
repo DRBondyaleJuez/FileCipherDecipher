@@ -73,10 +73,6 @@ public class ThreadManager {
 
         //Create the number of threads necessary for deciphering within the thread pool
         if(numberOfFilesToDecipher < numberOfThreads){numberOfThreads = numberOfFilesToDecipher;}
-        int numberOfPartsForEachThreadToDecipher = numberOfFilesToDecipher/numberOfThreads;
-        int finalThreadPartsToDecipher = numberOfPartsForEachThreadToDecipher + numberOfFilesToDecipher%numberOfThreads;
-
-
 
         //Creation FileDecipherDeposit
         FileDecipherDeposit currentFileDecipherDeposit = new FileDecipherDeposit(numberOfFilesToDecipher);

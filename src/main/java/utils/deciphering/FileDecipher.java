@@ -9,7 +9,7 @@ import java.util.ArrayList;
 
 public class FileDecipher implements Runnable{
 
-    private int id;
+    private final int id;
     private final String[] pathsOfFilesToDecipher;
     private byte[] decipherKey;
     private final FileDecipherDeposit fileDecipherDeposit;

@@ -5,7 +5,6 @@ import model.FileDecipherDeposit;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 
 public class FileJoiner implements Runnable {
     private final String decipherFileStorage;

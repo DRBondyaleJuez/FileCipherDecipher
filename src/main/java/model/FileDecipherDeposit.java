@@ -11,7 +11,7 @@ public class FileDecipherDeposit {
     public FileDecipherDeposit(int partsToBeDeciphered) {
         totalNumberOfParts = partsToBeDeciphered;
         numberOfPartsDeciphered = 0;
-        bytesReadyToFileArray = new ArrayList[partsToBeDeciphered];
+        bytesReadyToFileArray = new ArrayList<>[partsToBeDeciphered]; /////////////////////////DON'T KNOW HOW TO FIX THIS WARNING
     }
 
     public synchronized int getPartToDecipher(){
@@ -47,7 +47,7 @@ public class FileDecipherDeposit {
         return bytesToFile;
     }
 
-    public synchronized void addBytesToFile(int part,ArrayList listOfDecipheredBytes){
+    public synchronized void addBytesToFile(int part,ArrayList<Byte> listOfDecipheredBytes){
         bytesReadyToFileArray[part] = listOfDecipheredBytes;
         notifyAll();
     }
