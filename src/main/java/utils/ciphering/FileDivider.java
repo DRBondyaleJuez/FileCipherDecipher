@@ -27,7 +27,11 @@ public class FileDivider implements Runnable{
 
         int sizeOfEachPart = 5*1024*1024;
         if(file.length < sizeOfEachPart){
+            // TODO: CHECK How to divide each part when file.length is odd
             sizeOfEachPart = file.length/2;
+        }
+        if(file.length/1024 < 10){
+            sizeOfEachPart = file.length;
         }
         while(fileCipherDeposit.viewNumberOfPartsDivided() < fileCipherDeposit.viewTotalNumberOfParts()){
 
@@ -39,6 +43,9 @@ public class FileDivider implements Runnable{
             //Calculate bytes based on Part
             int startPosInFile = partNumber * sizeOfEachPart;
             int sizeOfThisPart = Math.min(file.length - startPosInFile, sizeOfEachPart);
+            if(file.length < 5*1024*1024 && partNumber == 1 && file.length%2 > 0){
+                sizeOfThisPart = sizeOfThisPart+1;
+            }
 
             byte[] partByteArray = new byte[sizeOfThisPart];
             System.arraycopy(file, startPosInFile, partByteArray, 0, sizeOfThisPart);
