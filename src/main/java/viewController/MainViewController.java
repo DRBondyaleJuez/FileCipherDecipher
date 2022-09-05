@@ -59,7 +59,13 @@ public class MainViewController implements Initializable {
 
     @FXML
     public void decipherAction(){
+        File initialCipherFilesDir = new File("WorkingFolder\\defaultFolder\\fileCipher");
+
         DirectoryChooser dirChooser = new DirectoryChooser();
+
+        if(initialCipherFilesDir.exists()){
+            dirChooser.setInitialDirectory(initialCipherFilesDir);
+        }
 
         Stage stage = (Stage) mainAnchorPane.getScene().getWindow();
 

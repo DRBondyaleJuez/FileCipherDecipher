@@ -1,14 +1,13 @@
 import core.FileCipherDecipher;
 import javafx.application.Application;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Random;
 
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args){
 
         Application.launch(FileCipherDecipher.class, args);
 

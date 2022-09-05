@@ -43,8 +43,4 @@ public class FileCipherDecipher extends Application {
             return null;
         }
     }
-
-
-
-
 }
