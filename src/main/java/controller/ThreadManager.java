@@ -144,10 +144,7 @@ public class ThreadManager {
         fileJoinerThread.start();
         System.out.println("Starting Final Joining"); ///////////////////////////////////////DELETE AFTER FINISH
 
-        //TODO: Put the array of arrayList outside i.e. in the thread manager and give it to the file joiner or even think of making the writing process of the fos concurrent
-        //Think about making the threads return decipher byte array and writing them in file using append or something like that to keep adding to the decipher byte array to the final file
-        //in order
-        
+
         for (int i = 0; i < numberOfThreads; i++) {
             try {
                 if(threads[i] != null) {
