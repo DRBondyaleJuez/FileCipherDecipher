@@ -28,13 +28,11 @@ public class FileJoiner implements Runnable {
             }
         }
 
-
         for (int i = 0; i < fileDecipherDeposit.viewTotalNumberOfParts(); i++) {
             byte[] byteArrayForFiling = fileDecipherDeposit.getBytesReadyToFile(i);
             storeDecipherFile(byteArrayForFiling);
             System.out.println("Deciphered part " + i + " stored in file " + decipherFileStorage); ///////////////////////DELETE WHEN FINISHED
         }
-
     }
 
     public void storeDecipherFile(byte[] finalByteArray){
@@ -51,12 +49,11 @@ public class FileJoiner implements Runnable {
         } else {
             try {
                 fos.write(finalByteArray);
+                fos.close();
             } catch (IOException e) {
                 e.printStackTrace();
                 System.out.println("Unable to write bytes of cipher file: " + decipherFileStorage);
             }
         }
     }
-
-
 }

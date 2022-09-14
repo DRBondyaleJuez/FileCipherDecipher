@@ -27,7 +27,6 @@ public class FileDivider implements Runnable{
 
         int sizeOfEachPart = 5*1024*1024;
         if(file.length < sizeOfEachPart){
-            // TODO: CHECK How to divide each part when file.length is odd
             sizeOfEachPart = file.length/2;
         }
         if(file.length/1024 < 10){
@@ -57,7 +56,7 @@ public class FileDivider implements Runnable{
     }
 
     //Method to divide and store file division
-    private void  storeFileDivision(int partNumber,byte[] partByteArrayToStore){
+    private void storeFileDivision(int partNumber,byte[] partByteArrayToStore){
 
         StringBuilder partNumberZeros = new StringBuilder();
         int numberOfZeros = 8 - String.valueOf(partNumber).length();
@@ -77,6 +76,7 @@ public class FileDivider implements Runnable{
             try {
                 fos.write(partByteArrayToStore);
                 fileCipherDeposit.addFileReadyToCipher(dividedFilePartPath);
+                fos.close();
             } catch (IOException e) {
                 e.printStackTrace();
                 System.out.println("Unable to write bytes of divided file: " + fileName+"_"+partNumber);

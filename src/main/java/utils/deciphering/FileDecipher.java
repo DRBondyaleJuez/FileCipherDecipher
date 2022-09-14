@@ -46,7 +46,7 @@ public class FileDecipher implements Runnable{
 
             fileDecipherDeposit.addBytesToFile(part,byteListReadyForFiling);
 
-            System.out.println("I am thread " + id + ". Part " + part + "unXORted added");
+            System.out.println("I am thread " + id + ". Part " + part + " unXORted added");
 
         }
     }

@@ -3,7 +3,9 @@ package controller;
 import model.FileCipherDeposit;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 
 public class Controller {
@@ -20,30 +22,71 @@ public class Controller {
 
     //Cipher SECTION
 
-    public void cipherFile(File file){
+    public void cipherFile(File file) {
+
+        //DIVISION
+        long fileSize = file.length();
+        System.out.println("File size: "+fileSize); //////////////////////////////////DELETE WHEN FINSIHED
+
+        //File will be considered too large when it exceeds 500Mb i.e. the process will be performed by 500 byteArrays
+        int subFileSize = 500 * 1024 * 1024;
+
+        System.out.println("Subfile size: " + subFileSize);
+        long numberOfRepetitionToProcessFile = fileSize /  subFileSize;
+
+        if (fileSize % subFileSize != 0) {
+            numberOfRepetitionToProcessFile++;
+        }
+        System.out.println("NumberOfRepsToProcessFile: " + numberOfRepetitionToProcessFile); //////////////////////////////////DELETE WHEN FINSIHED
+
+        int sizeOfThisSubFile = subFileSize;
+        if (fileSize < sizeOfThisSubFile) {
+            sizeOfThisSubFile = (int) fileSize;
+        }
+
+        System.out.println("sizeOfThisSubFile: "+ sizeOfThisSubFile); //////////////////////////////////DELETE WHEN FINSIHED
+
+        byte[] subFileByteArray = new byte[sizeOfThisSubFile];
+        System.out.println("Empty subfile array built of size: "+subFileByteArray.length);
+
+        int repCounter = 0;
+        try {
+            InputStream inputStream = new FileInputStream(file);
+
+            while ((inputStream.read(subFileByteArray)) != -1) {
+                //byte array is now filled. Do something with it.
+                processCurrentFileByteArray(file,subFileByteArray,repCounter);
+                repCounter++;
+                if(repCounter < numberOfRepetitionToProcessFile) {
+                    System.out.println("STARTING ANOTHER SECTION (Section "+repCounter+") TO PROCESS FILE WHICH EXCEEDS 500Mb"); ///////////////////////DELETE WHEN FINISH
+
+                    sizeOfThisSubFile = subFileSize;
+                    long readBytes = (long)subFileSize * repCounter;
+                    if (fileSize - readBytes < sizeOfThisSubFile) {
+                        sizeOfThisSubFile = (int)(fileSize - readBytes);
+                    }
+                    subFileByteArray = new byte[sizeOfThisSubFile];
+                }
+            }
+
+            inputStream.close();
+
+        } catch (IOException ioe) {
+            System.out.println("Error " + ioe.getMessage());
+            System.out.println("Unable to input stream file: " + file.toString());
+        }
+    }
+
+    private void processCurrentFileByteArray(File file, byte[] currentByteArray, int repNumber){
 
         //Obtaining Filename and format
         String fileNameAndFormat = file.getName();
         String[] separateNameAndFormat = fileNameAndFormat.split("\\.");
-        String fileFormat = separateNameAndFormat[separateNameAndFormat.length-1];
-        String fileName = fileNameAndFormat.replace("."+fileFormat,"");
-
-
-        //DIVISION
-
-        //Obtaining file in byte array form
-        byte[] fileByteArray;
-
-        try {
-            fileByteArray = Files.readAllBytes(file.toPath());
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.out.println("Was not able to convert file to byte array");
-            return;
-        }
+        String fileFormat = separateNameAndFormat[separateNameAndFormat.length - 1];
+        String fileName = fileNameAndFormat.replace("." + fileFormat, "");
 
         //Calculating number of parts necessary to divide the file
-        int numberOfParts = numberOfPartsBasedOnFileSize(file);
+        int numberOfParts = numberOfPartsBasedOnFileSize(currentByteArray);
 
         //Creating File Deposit
         FileCipherDeposit currentFileCipherDeposit = new FileCipherDeposit(numberOfParts);
@@ -60,7 +103,7 @@ public class Controller {
         }
 
         //Managing thread for file division
-        threadManager.manageDividerThreads(fileByteArray, currentFileCipherDeposit,fileName+"_"+fileFormat,projectPath);
+        threadManager.manageDividerThreads(currentByteArray, currentFileCipherDeposit,fileName+"_"+fileFormat+"_Section_"+repNumber, projectPath);
 
         //CIPHER
 
@@ -160,10 +203,10 @@ public class Controller {
         directoryToStoreDecipherFile = decipherFilesDir;
     }
 
-    private int numberOfPartsBasedOnFileSize(File file){
+    private int numberOfPartsBasedOnFileSize(byte[] currentByteArray){
         int numberOfParts;
 
-        double fileSizeInKb = (double) file.length()/1024;
+        double fileSizeInKb = (double) currentByteArray.length/1024;
         double fileSizeInMb = fileSizeInKb/1024;
 
         //First check if it is below 10kb

@@ -6,6 +6,11 @@ import utils.deciphering.FileDecipher;
 import utils.ciphering.FileDivider;
 import utils.deciphering.FileJoiner;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.Random;
 
 public class ThreadManager {
@@ -41,9 +46,24 @@ public class ThreadManager {
         if(currentFileCipherDeposit.viewTotalNumberOfParts() < numberOfThreads){numberOfThreads= currentFileCipherDeposit.viewTotalNumberOfParts();}
         Thread[] threads = new Thread[numberOfThreads];
 
-        byte[] keyByteArray =  new byte[256];
-        Random randomGenerator = new Random();
-        randomGenerator.nextBytes(keyByteArray);
+        //Generating and Storing Key if it does not exist already
+
+        String keyPath = cipherStoreDirectory + "\\KEY.cipher";
+        File keyFile = new File(keyPath);
+        if (! keyFile.exists()) {
+            byte[] keyByteArray =  new byte[256];
+            Random randomGenerator = new Random();
+            randomGenerator.nextBytes(keyByteArray);
+            storeKey(keyFile,keyByteArray);
+            System.out.println("Key file created and stored: " + keyFile); ////////////////////////////////////// DELETE WHEN FINISHED
+        }
+        byte[] keyByteArray;
+        try {
+            keyByteArray = Files.readAllBytes(keyFile.toPath());
+        } catch (IOException e) {
+            System.out.println("Error reading bytes of key file the process has to stop");
+            return;
+        }
 
         for (int i = 0; i < numberOfThreads; i++) {
             FileCipher fileCipher = new FileCipher(cipherStoreDirectory, currentFileCipherDeposit,keyByteArray,i);
@@ -62,6 +82,27 @@ public class ThreadManager {
         }
 
         System.out.println("If no error message has been displayed the cipher parts of the file and key should be correctly stored in this path: " + cipherStoreDirectory);
+    }
+
+    private void storeKey(File keyFile, byte[] keyByteArray){
+
+        FileOutputStream fos = null;
+        try {
+            fos = new FileOutputStream(keyFile);///// NOT ABLE TO SOLVE WARNING
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            System.out.println("Unable to find a file to store key bytes");
+        }
+        if(fos == null) {
+            System.out.println("Unable to use file to store key bytes");
+        } else {
+            try {
+                fos.write(keyByteArray);
+            } catch (IOException e) {
+                e.printStackTrace();
+                System.out.println("Unable to write bytes y key file");
+            }
+        }
     }
 
     public void manageDecipherThreads(String[] arrayOfFilePaths,String keyPath, String decipherStoreDirectory){

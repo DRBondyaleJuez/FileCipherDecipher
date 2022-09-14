@@ -62,7 +62,7 @@ public class FileDecipherDeposit {
             try {
                 System.out.println("I am a deciphering thread trying to add part " + part + " to decipher deposit. But there have been only " + numberOfPartsAddedToFile +
                         " parts added to the file. To avoid out of memory error I will wait 2 seconds");
-                wait(2000);
+                wait();
             } catch (InterruptedException e) {
                 System.out.println("The deciphering of part " +part+" was interrupted.");
                 throw new RuntimeException(e);

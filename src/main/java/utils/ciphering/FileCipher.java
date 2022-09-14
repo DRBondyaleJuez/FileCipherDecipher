@@ -17,9 +17,6 @@ public class FileCipher implements Runnable{
         this.saveCipherDirectory = saveCipherDirectory;
         this.fileCipherDeposit = currentFileCipherDeposit;
         key = keyByteArray;
-        if(threadId == 0){ //Only store the key the first time
-            storeKey();
-        }
 
         System.out.println("FileCipher with id number " + id + " was constructed"); ///////////////////////////////DELETE WHEN FINISHED
     }
@@ -29,7 +26,7 @@ public class FileCipher implements Runnable{
     public void run() {
 
         while(fileCipherDeposit.viewTotalNumberOfFileCipher() < fileCipherDeposit.viewTotalNumberOfParts()) {
-            //Generate key
+            //Get key
             byte[] currentKey = key;
 
             //GetFile content in byte array format
@@ -100,6 +97,7 @@ public class FileCipher implements Runnable{
         } else {
             try {
                 fos.write(cipherBytes);
+                fos.close();
             } catch (IOException e) {
                 e.printStackTrace();
                 System.out.println("Unable to write bytes of cipher file: " + fileName);
@@ -107,24 +105,4 @@ public class FileCipher implements Runnable{
         }
     }
 
-    private void storeKey(){
-
-        FileOutputStream fos = null;
-        try {
-            fos = new FileOutputStream(saveCipherDirectory + "\\KEY.cipher");///// NOT ABLE TO SOLVE WARNING
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-            System.out.println("Unable to find a file to store key bytes");
-        }
-        if(fos == null) {
-            System.out.println("Unable to use file to store key bytes");
-        } else {
-            try {
-                fos.write(key);
-            } catch (IOException e) {
-                e.printStackTrace();
-                System.out.println("Unable to write bytes y key file");
-            }
-        }
-    }
 }
