@@ -6,8 +6,20 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
 
+/**
+ * Provides the main controller for the ciphering and deciphering preparation of the files. It is in charge of dividing the
+ * files to cipher into parts if they are too large to avoid certain errors. These parts are also then divided into fragments
+ * to facilitate concurrent ciphering. The number of fragments is also calculated here based on the size of the file.
+ * The files to decipher are already divided into fragments so here the key file is separated.
+ * It also converts the file parts into array of bytes ready for encryption.
+ * <p>
+ *     The controller is preparing the files for concurrent ciphering and deciphering. This concurrent operation is managed
+ *     by the threadManager. with the help of FileCipherDeposits and FileDecipherDeposits
+ * </p>
+ * @author Daniel R Bondyale Juez
+ * @version 1.0
+ */
 public class Controller {
 
     private File directoryToStoreDividedFile;
@@ -15,6 +27,11 @@ public class Controller {
     private final ThreadManager threadManager;
     private File directoryToStoreDecipherFile;
 
+    /**
+     * This is the constructor. Here the directories where the ciphered fragments and deciphered files will be stored are
+     * created if it is the first time. Also, a ThreadManager object is instantiated and will distribute the array of bytes
+     * of the file parts to be further divided and ciphered concurrently using threads.
+     */
     public Controller() {
         createOrUseFileDirectories();
         threadManager= new ThreadManager();
@@ -22,6 +39,16 @@ public class Controller {
 
     //Cipher SECTION
 
+    /**
+     * This method starts the ciphering process calculating the number of parts the file will be divided into if
+     * it is larger than 500Mb to prevent memory out of bound error. Then it iteratively goes through the file extracting, in
+     * the form of a byte array, the portion of bytes corresponding to that part's size. This bytearray is the argument of a
+     * ThreadManager method which will assign the ciphering job to a particular thread so each part of 500Mb are done
+     * asynchronously but then during processing of each 500Mb part they are further divided into parts based on the number
+     * of fragments calculated here too which are ciphered
+     * concurrently.
+     * @param file The file provided by the viewController which needs to be ciphered.
+     */
     public void cipherFile(File file) {
 
         //DIVISION
@@ -126,6 +153,13 @@ public class Controller {
 
     //DECIPHER SECTION
 
+    /**
+     * This method starts the deciphering process by some light procesing of the fragments names and separating the key
+     * file from the fragments to decipher. These paths of the fragments are provided the threadManager for posterior
+     * concurrent deciphering and joining together.
+     * @param cipheredFilesFolder File provided by the viewController corresponding to the directory where the ciphered
+     *                            fragments of file to be decipher are stored. I
+     */
     public void decipherFiles(File cipheredFilesFolder){
 
         String[] cipheredFileNames = cipheredFilesFolder.list();
