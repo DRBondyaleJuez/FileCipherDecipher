@@ -4,6 +4,14 @@ import model.FileCipherDeposit;
 
 import java.io.*;
 
+/**
+ * Provides the runnable objects provided to Threads in charge of dividing files into fragments to facilitate ciphering.
+ * <p>
+ *     This class implement the interface Runnable.
+ * </p>
+ * @author Daniel R Bondyale Juez
+ * @version 1.0
+ */
 public class FileDivider implements Runnable{
 
     private final int id;
@@ -12,6 +20,17 @@ public class FileDivider implements Runnable{
     private final String saveDirectory;
     private final FileCipherDeposit fileCipherDeposit;
 
+    /**
+     * This is the constructor of this runnable Class
+     * @param file byte[] corresponding to the bytes of the file that needs dividing
+     * @param fileName String corresponding to the generic name of the file which will have a serial code added.
+     * @param saveDirectory String corresponding to the path of the directory where these divided fragments will be stored.
+     * @param currentFileCipherDeposit FileCipherDeposit object containing the information regarding the number of fragments
+     *                                 expected, the number that have been stored already and the paths of all these fragments
+     *                                 for further after to cipher.
+     * @param threadId int corresponding to one of the threads. In this case from 0 to 4 since it operates with 5 threads
+     *                 these may indicate which section of the file it is dividing so no threads divide the same section twice.
+     */
     public FileDivider(byte[] file, String fileName, String saveDirectory, FileCipherDeposit currentFileCipherDeposit, int threadId) {
         id = threadId;
         this.file = file;
@@ -22,6 +41,17 @@ public class FileDivider implements Runnable{
     }
 
 
+    /**
+     * Implementation of the abstract method of the Runnable interface to perform the concurrent division of the file into fragments.
+     * <p>
+     *     The fragment have been established to have a size of 5Mb if it is between 5 and 10kB the fragments are half the
+     *     size of the file and if they are below 10kB they are not fragmented.
+     *     The process of dividing consists on an iterative loop where successive the sections of the file are stored separately.
+     *     However, the control of how many parts are left to divide is handled by the FileCipherDeposit. This could be a
+     *     critical section since multiple threads could attempt to modify or retrieve so the get method of this information
+     *     is synchronized.
+     * </p>
+     */
     @Override
     public void run() {
 

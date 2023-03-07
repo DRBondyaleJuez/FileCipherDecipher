@@ -7,6 +7,14 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 
+/**
+ * Provides the runnable objects provided to Threads in charge of deciphering previously encrypted fragments.
+ * <p>
+ *     This class implement the interface Runnable.
+ * </p>
+ * @author Daniel R Bondyale Juez
+ * @version 1.0
+ */
 public class FileDecipher implements Runnable{
 
     private final int id;
@@ -14,6 +22,14 @@ public class FileDecipher implements Runnable{
     private byte[] decipherKey;
     private final FileDecipherDeposit fileDecipherDeposit;
 
+    /**
+     * This is the constructor of this runnable Class.
+     * @param pathsOfFilesToDecipher String array corresponding to the paths of encrypted fragments to be deciphered.
+     * @param keyFileString String corresponding to the path of the key file needed to decipher.
+     * @param fileDecipherDeposit FileDecipherDeposit object that keeps track of the deciphered fragments and is used to organize
+     *                            the access of the threads to the fragments to decipher.
+     * @param threadId int identifying the current thread which in this case can be 0 to 2 since it is working with 2 threads.
+     */
     public FileDecipher(String[] pathsOfFilesToDecipher, String keyFileString, FileDecipherDeposit fileDecipherDeposit, int threadId) {
 
             this.fileDecipherDeposit = fileDecipherDeposit;
@@ -30,6 +46,14 @@ public class FileDecipher implements Runnable{
         System.out.println("FileDecipher with id number " + id + " was constructed"); ///////////////////////////////DELETE WHEN FINISHED
     }
 
+    /**
+     * Implementation of the abstract method of the Runnable interface to perform the concurrent deciphering of the encrypted fragments.
+     * <p>
+     *     The fragments are deciphered in a loop where the fragment to decipher is provided by the FileDecipherDeposit which has
+     *     a synchronized get method to avoid issue in the critical section when the threads are operating simultaneously.
+     *     The end of the loop is also declared by the FileDecipherDeposit.
+     * </p>
+     */
     @Override
     public void run() {
 
@@ -51,7 +75,7 @@ public class FileDecipher implements Runnable{
     }
 
     //Convert file that needs deciphering to its byte array form
-    public byte[] getDecipherByteArray(int fileListPosition) {
+    private byte[] getDecipherByteArray(int fileListPosition) {
 
         byte[] currentByteArrayToDecipher = null;
 
@@ -65,7 +89,7 @@ public class FileDecipher implements Runnable{
     }
 
     //Undo the xor ciphering of the byte array of the file
-    public byte[] unXORArray(byte[] byteArrayToUnXOR){
+    private byte[] unXORArray(byte[] byteArrayToUnXOR){
         byte[] unXoredArray = new byte[byteArrayToUnXOR.length];
 
         for (int i = 0; i < byteArrayToUnXOR.length; i++) {

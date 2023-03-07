@@ -5,6 +5,14 @@ import model.FileCipherDeposit;
 import java.io.*;
 import java.nio.file.Files;
 
+/**
+ * Provides the runnable objects provided to Threads in charge of ciphering previously divided fragments.
+ * <p>
+ *     This class implement the interface Runnable.
+ * </p>
+ * @author Daniel R Bondyale Juez
+ * @version 1.0
+ */
 public class FileCipher implements Runnable{
 
     private final int id;
@@ -12,6 +20,15 @@ public class FileCipher implements Runnable{
     private final FileCipherDeposit fileCipherDeposit;
     private static byte[] key;
 
+    /**
+     * This is the constructor of this runnable Class
+     * @param saveCipherDirectory String corresponding to the path where the ciphered fragments will be stored.
+     * @param currentFileCipherDeposit FileCipherDeposit object involved in the file division containing the number of
+     *                                 fragments required for the file, the number of fragments ready for ciphering
+     *                                 and their locations. Will also track the progression of the ciphering.
+     * @param keyByteArray byte[] of the key needed to cipher the divided fragments.
+     * @param threadId int identifying the current thread which in this case can be 0 or 1 since it is working with 2 threads.
+     */
     public FileCipher(String saveCipherDirectory, FileCipherDeposit currentFileCipherDeposit, byte[] keyByteArray, int threadId) {
         id = threadId;
         this.saveCipherDirectory = saveCipherDirectory;
@@ -22,6 +39,14 @@ public class FileCipher implements Runnable{
     }
 
 
+    /**
+     * Implementation of the abstract method of the Runnable interface to perform the concurrent ciphering of the file into fragments.
+     * <p>
+     *     The fragments are ciphered in a loop where the fragment to cipher is provided by the FileCipherDeposit which has
+     *     a synchronized get method to avoid issue in the critical section when the threads are operating simultaneously.
+     *     The end of the loop is also declared by the FileCipherDeposit.
+     * </p>
+     */
     @Override
     public void run() {
 
