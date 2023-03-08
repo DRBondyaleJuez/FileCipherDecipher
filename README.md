@@ -37,7 +37,7 @@ ___
 ___
 
 ## __USAGE__
-The interface is very simple. An image and a menu. The file menu has the options open to browse the file you want to cipher and the option decipher to browse for a directory with the name of a ciphered file "_[extension]" that should contain all files with the extension ".CIPHER" and a "key.CIPHER" file too. 
+The interface is very simple. An image and a menu. The file menu has the options open to browse the file you want to cipher and the option decipher to browse for a directory with the name of a ciphered file "_[extension]" that should contain all files with a serialized number or code with the extension ".CIPHER" and a "key.CIPHER" file too. 
 
 <div style="text-align: center;">
 
@@ -47,7 +47,7 @@ The interface is very simple. An image and a menu. The file menu has the options
 
 The divided files are stored in a folder in the proyect named defaultFolder/fileDivisions, ciphered files in defaultFolder/fileCipher and deciphered files in defaultFolder/fileDecipher. Deciphered files have an additional "(DECIPHER)" in the name before the extension.
 
-
+The process for file below 5Mb in size and below 100Kb is slightly different. These not divided as much into smaller files. Really large files above 500Mb will also present in their ciphered files a serialized number up to 99 and the code "PART" with another serialized number corresponding to the initial division of the file to avoid memory out of bound exceptions.
 
 ___
 ___
