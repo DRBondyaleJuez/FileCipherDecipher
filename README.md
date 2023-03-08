@@ -3,7 +3,7 @@
 
 ___
 
-![GitHub contributors](https://img.shields.io/github/contributors/DRBondyaleJuez/FilecipherDecipher)
+![GitHub contributors](https://img.shields.io/github/contributors/DRBondyaleJuez/FileCipherDecipher)
 ![GitHub repo size](https://img.shields.io/github/repo-size/DRBondyaleJuez/FileCipherDecipher)
 ___
 
