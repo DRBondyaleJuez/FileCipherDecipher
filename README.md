@@ -9,21 +9,21 @@ ___
 
 ## __DESCRIPTION__
 
-The program is simple, it ciphers files into several encrypted smaller files and its then able to decipher and recuperate the original file. Dividing, ciphering and deciphering the files are performed using concurrent coding, this is, using Thread Class, Runnable inteface and synchronized methods. It has also a small user interface to select the files to cipher and directories with the ciphered files to decipher. This view is managed using the JavaFXML framework.
+The program is simple, it ciphers files into several encrypted smaller files and its then able to decipher and recover the original file. Dividing, ciphering and deciphering the files are performed using concurrent coding, using Thread Class, Runnable inteface and synchronized methods. It has also a small user interface to select the files to cipher and directories with the ciphered files to decipher. This view is managed using the JavaFXML framework.
 
 ### __Ciphering Process__
 
-More precisely, the program begins by subdividing the file into maximum segments of 500Mb if they are smaller this is not necesary.
+The program begins by subdividing the file into segments of a maximum size of 500Mb if they are smaller this is not necessary.
 
-Then the system creates in the proyects directory a folder for each of the processes the file undergoes. Each file is divided and stored in as many <5Mb files as needed and then each of these files is ciphered based on a key of 256 bytes and stored in another folder with the extension .CIPHER. Both these process take place concurrently using a total of 7 threads. These threads are coordinated by a monitor type class named FileCipherDeposit with several synchronized methods which limit the access to critical zones to one thread at a time. Some were even conditional synchronized.
+Then the system creates a folder in the project's directory for each of the processes mentioned: one for the divided file, one for the file ciphered fragments and one for when the file is recovered from the ciphered fragments. Each file is divided and stored in as many <5Mb files as needed and then each of these files is ciphered based on a key of 256 bytes and stored in another folder with the extension .CIPHER. Both these process take place concurrently using a total of 7 threads. These threads are coordinated by a monitor type class named FileCipherDeposit with several synchronized methods which limit the access to critical zones to one thread at a time. Some were even conditional synchronized.
 
-For example, the thread that retreived 5Mb files when they were divided could only do this if there were files divided to cipher. If there wasn't it was programmed to wait and the moment a file was ready to cipher it notified waiting threads.
+For example, the thread that retrieved 5Mb files when they were divided could only do this if there were files divided to cipher. If there wasn't, this thread was programmed to wait and after a file became ready to be ciphered it notified waiting threads.
 
 ### __Deciphering Process__
 
 To decipher, a folder containing the key and the ciphered <5Mb files must be selected. Then a similar reverse process takes place where each small file is deciphered using the key and then reassembled together and saved in another folder. This process uses 4 concurrent threads and again are coordinated by the use of a monitor in the form of a class called FileDecipherDeposit with several synchronized methods that limit the access to critical zones. Some were even conditional synchronized.
 
-For example, the runnable class in charged of joining (FileJoiner) had only one thread while the deciphering runnable class (FileDecipher) had 3. During deciphering big files a memory out of bound error appear due to the high amount of byte arrays generated. To provisionally solve this a conditional synchronization was applied to addition of further byte aray by the FileDecipher threads. If the diference between the files deciphered and the files joined was to high (in this case 10 was chosen) then the addition of further decipher byte arrays would wait. Then when a deciphered byte array was added  to the final reassembled file, and also eliminated from the queu, it notified the other threads so they could add more byte arrays.
+For example, the runnable class in charged of joining (FileJoiner) had only one thread while the deciphering runnable class (FileDecipher) had 3. During deciphering big files a memory out of bound error appeared due to the high amount of byte arrays generated. To provisionally solve this, a conditional synchronization was applied to the method with the responsibility of adding further byte array used by the FileDecipher threads. If the difference between the files deciphered and the files joined was too high (in this case 10 was chosen) then the process of addition of further decipher byte arrays would wait. Then when a deciphered byte array was added  to the final reassembled file, and also eliminated from the queue, it notified the other threads so they could add more byte arrays.
 
 
 
@@ -61,7 +61,6 @@ ___
 ### __For Ubuntu (In terminal):__
 <!-- OL -->
 1. If necessary [install java version 11 or higher](https://stackoverflow.com/questions/52504825/how-to-install-jdk-11-under-ubuntu)
-
 
     ```bash 
         sudo apt-get install openjdk-11-jdk
