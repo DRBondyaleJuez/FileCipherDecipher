@@ -47,22 +47,28 @@ public class FileCipherDecipher extends Application {
         // getClass().getResource("/path/of/the/resource")
         FXMLLoader paneLoader = new FXMLLoader(getClass().getResource("/view/MainView.fxml"));
         Parent root = loadPaneLoader(paneLoader);
-        if(root != null) {
+        if(root == null) {
+            // This is the extreme case if loaded fxml file is null
+            gracefulShutdown();
+        } else {
             Scene newScene = new Scene(root);
             mainStage.setScene(newScene);
-        } else {
-            System.out.println("Unable to load pan loader root is NULL");
         }
     }
-
     private Parent loadPaneLoader(FXMLLoader paneLoader) {
         try {
             return paneLoader.load();
         } catch (IOException e) {
             //Todo: log!!
-            //Todo do something if the try fails
-            System.out.println("FAIL!!! EXPLOTION!!!! BOOOOOOM");
+            System.out.println("The FXML file could not be loaded.");
             return null;
         }
+    }
+
+    private void gracefulShutdown(){
+        // Show something to the user if apply
+        // save a new log if a apply
+        System.out.println("HERE");
+        System.exit(-1);
     }
 }
