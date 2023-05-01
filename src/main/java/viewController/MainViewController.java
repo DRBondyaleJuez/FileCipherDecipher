@@ -9,11 +9,13 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import org.apache.commons.io.IOUtils;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.net.URISyntaxException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
-import java.util.Objects;
 import java.util.ResourceBundle;
 
 /**
@@ -56,13 +58,9 @@ public class MainViewController implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        try {
-            Image mainImage = new Image(Objects.requireNonNull(getClass().getResource("/images/cipherLock.png")).toURI().toString()); //// MOSTRABA UNA ADVERTENCIA Y LA SOLUCIÓN FUE ESE object.requireNonNUL
-            mainImageView.setImage(mainImage);
-        } catch (URISyntaxException | NullPointerException e) {
-            e.printStackTrace();
-            System.out.println("mainImage could not be found");
-        }
+        Image mainImage = getImageFromResources();
+        mainImageView.setImage(mainImage);
+
     }
 
 
@@ -126,7 +124,7 @@ public class MainViewController implements Initializable {
 
         String[] cipheredFileNames = selectedDir.list();
 
-        if(cipheredFileNames.length == 0) return false;
+        if(cipheredFileNames == null || cipheredFileNames.length == 0) return false;
 
         for (String cipheredFileName : cipheredFileNames) {
             int currentFileNameLength = cipheredFileName.length();
@@ -134,6 +132,20 @@ public class MainViewController implements Initializable {
             if (!currentExtension.equals(".cipher")) return false;
         }
         return true;
+    }
+
+    private Image getImageFromResources(){
+        try {
+            InputStream imageInputStream = MainViewController.class.getResourceAsStream("/images/cipherLock.png");
+            if(imageInputStream == null){
+                throw new IOException();
+            }
+            return new Image(new ByteArrayInputStream(IOUtils.toByteArray(imageInputStream)));
+        } catch (IOException e) {
+            System.out.println("Unable to retrieve empty grid image");
+            e.printStackTrace();
+            return null;
+        }
     }
 }
 
