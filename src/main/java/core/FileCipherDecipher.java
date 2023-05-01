@@ -33,7 +33,7 @@ public class FileCipherDecipher extends Application {
      *  * </p>
      * @param stage Stage object provided during the static launch method execution.
      */
-    @Override public void start(Stage stage)  throws Exception {
+    @Override public void start(Stage stage) {
         mainStage = stage;
         loadingMainScene();
 
@@ -47,8 +47,12 @@ public class FileCipherDecipher extends Application {
         // getClass().getResource("/path/of/the/resource")
         FXMLLoader paneLoader = new FXMLLoader(getClass().getResource("/view/MainView.fxml"));
         Parent root = loadPaneLoader(paneLoader);
-        Scene newScene = new Scene(root);
-        mainStage.setScene(newScene);
+        if(root != null) {
+            Scene newScene = new Scene(root);
+            mainStage.setScene(newScene);
+        } else {
+            System.out.println("Unable to load pan loader root is NULL");
+        }
     }
 
     private Parent loadPaneLoader(FXMLLoader paneLoader) {
@@ -58,7 +62,6 @@ public class FileCipherDecipher extends Application {
             //Todo: log!!
             //Todo do something if the try fails
             System.out.println("FAIL!!! EXPLOTION!!!! BOOOOOOM");
-            System.out.println(e);
             return null;
         }
     }

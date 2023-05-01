@@ -100,7 +100,7 @@ public class Controller {
 
         } catch (IOException ioe) {
             System.out.println("Error " + ioe.getMessage());
-            System.out.println("Unable to input stream file: " + file.toString());
+            System.out.println("Unable to input stream file: " + file);
         }
     }
 
